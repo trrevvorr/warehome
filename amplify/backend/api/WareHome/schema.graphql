@@ -1,0 +1,32 @@
+type Item @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String
+  locationID: ID! @index(name: "byLocation")
+  containerID: ID @index(name: "byContainer")
+}
+
+type Container @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String
+  areaID: ID @index(name: "byArea")
+  Items: [Item] @hasMany(indexName: "byContainer", fields: ["id"])
+  locationID: ID! @index(name: "byLocation")
+  parentContainerID: ID @index(name: "byParentContainer")
+  Containers: [Container] @hasMany(indexName: "byParentContainer", fields: ["id"])
+}
+
+type Area @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String
+  locationID: ID! @index(name: "byLocation")
+  Containers: [Container] @hasMany(indexName: "byArea", fields: ["id"])
+}
+
+type Location @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String
+  Areas: [Area] @hasMany(indexName: "byLocation", fields: ["id"])
+  Containers: [Container] @hasMany(indexName: "byLocation", fields: ["id"])
+  Items: [Item] @hasMany(indexName: "byLocation", fields: ["id"])
+}
+ 
