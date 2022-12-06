@@ -4,14 +4,9 @@
     <label for="item-name-input">Name</label>
     <input id="item-name-input" type="text" v-model="newItemName" />
     <label for="item-container-select">Container</label>
-    <select id="item-container-select" v-model="containerId">
-      <option v-for="container in containers" :key="container.id" :value="container.id">
-        {{ container.ancestors.asString + container.name }}
-      </option>
-    </select>
+    <container-select :value="containerId" @selectOption="(val) => (containerId = val)" />
     <span></span>
     <div>
-      <button @click="resetForm">Reset</button>
       <button @click="addNewItem" :disabled="!newItemName || loading">Create Item</button>
     </div>
   </div>
@@ -19,19 +14,20 @@
   <h3>Items</h3>
   <ul class="item-list">
     <li v-for="item in items" :key="item.id">
-      <router-link class="item-name" :to="('/items/' + item.id)">{{item.name}}</router-link>
-      <span>{{ item.container && (item.container.ancestors.asString + item.container.name) }}</span>
-      <button @click="deleteItem(item.id)">Delete</button>
+      <router-link class="item-name" :to="'/items/' + item.id">{{ item.name }}</router-link>
+      <container-link v-if="item.container" :container="item.container" />
     </li>
   </ul>
 </template>
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import ContainerSelect from "../components/ContainerSelect.vue";
+import ContainerLink from "../components/ContainerLink.vue";
 
 export default {
   name: "ItemForm",
-  components: {},
+  components: { ContainerSelect, ContainerLink },
   data() {
     return {
       newItemName: "",
@@ -46,7 +42,7 @@ export default {
     ...mapActions(["addItem", "deleteItem"]),
     async addNewItem() {
       this.loading = true;
-      await this.addItem({name: this.newItemName, containerId: this.containerId});
+      await this.addItem({ name: this.newItemName, containerId: this.containerId });
       this.resetForm();
       this.loading = false;
     },
@@ -68,7 +64,7 @@ export default {
 
 .item-list li {
   display: grid;
-  grid-template-columns: 1fr 2fr auto;
+  grid-template-columns: 1fr auto;
   gap: 1rem;
 }
 </style>

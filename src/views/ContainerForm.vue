@@ -5,16 +5,18 @@
     <input id="container-name-input" type="text" v-model="newContainerName" />
 
     <label for="container-parentContainer-select">Parent Container</label>
-    <select id="container-parentContainer-select" v-model="parentContainerId" :disabled="!!areaId">
-      <option v-for="container in containers" :key="container.id" :value="container.id">
-        {{ container.ancestors.asString + container.name }}
-      </option>
-    </select>
+    <container-select
+      :value="parentContainerId"
+      @selectOption="(val) => (parentContainerId = val)"
+      :disabled="!!areaId"
+    />
 
     <label for="container-area-select">Area</label>
-    <select id="container-area-select" v-model="areaId" :disabled="!!parentContainerId">
-      <option v-for="area in areas" :key="area.id" :value="area.id">{{ area.name }}</option>
-    </select>
+    <area-select
+      :value="areaId"
+      @selectOption="(val) => (areaId = val)"
+      :disabled="!!parentContainerId"
+    />
 
     <span></span>
     <div>
@@ -35,10 +37,12 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import ContainerList from "../components/ContainerList.vue";
+import ContainerSelect from "../components/ContainerSelect.vue";
+import AreaSelect from "../components/AreaSelect.vue";
 
 export default {
   name: "ContainerForm",
-  components: { ContainerList },
+  components: { ContainerList, ContainerSelect, AreaSelect },
   data() {
     return {
       newContainerName: "",

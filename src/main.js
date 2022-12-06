@@ -6,4 +6,7 @@ import store from './store'
 import router from './router'
 
 Amplify.configure(awsconfig);
-createApp(App).use(router).use(store).mount('#app')
+createApp(App)
+    .use(router)
+    .use(store)
+    .mount('#app');

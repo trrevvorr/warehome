@@ -5,9 +5,11 @@
         <h2>{{ item.name }}</h2>
         <span class="subtitle">Item</span>
       </span>
-      <button @click="deleteItem(item.id)">
-        Delete
-      </button>
+      <n-button circle type="error" @click="deleteItem(item.id)">
+        <template #icon>
+        <n-icon><trash-icon /></n-icon>
+      </template>
+      </n-button>
     </div>
 
       <div class="label">Container</div>
@@ -18,10 +20,13 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import ContainerLink from "../components/ContainerLink.vue";
+import { NButton, NIcon } from 'naive-ui';
+import { Delete16Filled as TrashIcon } from '@vicons/fluent'
+
 
 export default {
   name: "ItemView",
-  components: { ContainerLink },
+  components: { ContainerLink, NButton, NIcon, TrashIcon },
   props: {
     itemId: {
       type: String,

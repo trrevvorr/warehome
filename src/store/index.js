@@ -91,7 +91,6 @@ export default createStore({
         locationID: state.locationId,
         containerID: input.containerId || undefined,
       });
-      console.log(item);
       await DataStore.save(item).then(() => {
         commit("updateItems", [...state.items, item]);
       });
