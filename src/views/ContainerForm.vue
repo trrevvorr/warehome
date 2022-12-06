@@ -7,7 +7,7 @@
     <label for="container-parentContainer-select">Parent Container</label>
     <select id="container-parentContainer-select" v-model="parentContainerId" :disabled="!!areaId">
       <option v-for="container in containers" :key="container.id" :value="container.id">
-        {{ containerHierarchyToString(container) }}
+        {{ container.ancestors.asString + container.name }}
       </option>
     </select>
 
@@ -19,7 +19,10 @@
     <span></span>
     <div>
       <button @click="resetForm">Reset</button>
-      <button @click="addNewContainer" :disabled="!(newContainerName) || !(!!parentContainerId ^ !!areaId) || loading">
+      <button
+        @click="addNewContainer"
+        :disabled="!newContainerName || !(!!parentContainerId ^ !!areaId) || loading"
+      >
         Create Container
       </button>
     </div>
@@ -35,7 +38,7 @@ import ContainerList from "../components/ContainerList.vue";
 
 export default {
   name: "ContainerForm",
-  components: {ContainerList},
+  components: { ContainerList },
   data() {
     return {
       newContainerName: "",
@@ -46,13 +49,6 @@ export default {
   },
   computed: {
     ...mapGetters(["containers", "areas"]),
-    hierarchicalContainers() {
-      return this.containers.filter((container) => !container.parentContainerId)
-      .map((container) => ({
-          ...container,
-          children: this.getChildContainers(container),
-      }));
-    },
   },
   methods: {
     ...mapActions(["addContainer", "deleteContainer"]),
@@ -66,33 +62,10 @@ export default {
       this.resetForm();
       this.loading = false;
     },
-    getChildContainers(container) {
-      return this.containers.filter(
-        (childContainer) => childContainer.parentContainerId === container.id
-      ).map((childContainer) => ({
-        ...childContainer,
-        children: this.getChildContainers(childContainer),
-      }));
-    },
     resetForm() {
       this.newContainerName = "";
       this.areaId = "";
       this.parentContainerId = "";
-    },
-    containerHierarchyToString(container) {
-      const hierarchy = [];
-      let currContainer = container;
-      do {
-        hierarchy.push(currContainer);
-        currContainer = this.containers.find(
-          (container) => container.id === currContainer.parentContainerID
-        );
-      } while (currContainer);
-
-      hierarchy.reverse()
-      const area = hierarchy[0].area;
-      const hierarchyString = hierarchy.map(c => c.name).join(" / ");
-      return area ? area.name + " > " + hierarchyString : hierarchyString;
     },
   },
 };

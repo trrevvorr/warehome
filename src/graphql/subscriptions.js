@@ -55,12 +55,35 @@ export const onCreateContainer = /* GraphQL */ `
       name
       areaID
       Items {
+        items {
+          id
+          name
+          locationID
+          containerID
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
         nextToken
         startedAt
       }
       locationID
       parentContainerID
       Containers {
+        items {
+          id
+          name
+          areaID
+          locationID
+          parentContainerID
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
         nextToken
         startedAt
       }
@@ -81,12 +104,35 @@ export const onUpdateContainer = /* GraphQL */ `
       name
       areaID
       Items {
+        items {
+          id
+          name
+          locationID
+          containerID
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
         nextToken
         startedAt
       }
       locationID
       parentContainerID
       Containers {
+        items {
+          id
+          name
+          areaID
+          locationID
+          parentContainerID
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
         nextToken
         startedAt
       }
@@ -107,12 +153,35 @@ export const onDeleteContainer = /* GraphQL */ `
       name
       areaID
       Items {
+        items {
+          id
+          name
+          locationID
+          containerID
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
         nextToken
         startedAt
       }
       locationID
       parentContainerID
       Containers {
+        items {
+          id
+          name
+          areaID
+          locationID
+          parentContainerID
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
         nextToken
         startedAt
       }
@@ -131,6 +200,18 @@ export const onCreateArea = /* GraphQL */ `
       name
       locationID
       Containers {
+        items {
+          id
+          name
+          areaID
+          locationID
+          parentContainerID
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
         nextToken
         startedAt
       }
@@ -149,6 +230,18 @@ export const onUpdateArea = /* GraphQL */ `
       name
       locationID
       Containers {
+        items {
+          id
+          name
+          areaID
+          locationID
+          parentContainerID
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
         nextToken
         startedAt
       }
@@ -167,6 +260,18 @@ export const onDeleteArea = /* GraphQL */ `
       name
       locationID
       Containers {
+        items {
+          id
+          name
+          areaID
+          locationID
+          parentContainerID
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
         nextToken
         startedAt
       }
@@ -184,14 +289,47 @@ export const onCreateLocation = /* GraphQL */ `
       id
       name
       Areas {
+        items {
+          id
+          name
+          locationID
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
         nextToken
         startedAt
       }
       Containers {
+        items {
+          id
+          name
+          areaID
+          locationID
+          parentContainerID
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
         nextToken
         startedAt
       }
       Items {
+        items {
+          id
+          name
+          locationID
+          containerID
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
         nextToken
         startedAt
       }
@@ -209,14 +347,47 @@ export const onUpdateLocation = /* GraphQL */ `
       id
       name
       Areas {
+        items {
+          id
+          name
+          locationID
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
         nextToken
         startedAt
       }
       Containers {
+        items {
+          id
+          name
+          areaID
+          locationID
+          parentContainerID
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
         nextToken
         startedAt
       }
       Items {
+        items {
+          id
+          name
+          locationID
+          containerID
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
         nextToken
         startedAt
       }
@@ -234,14 +405,47 @@ export const onDeleteLocation = /* GraphQL */ `
       id
       name
       Areas {
+        items {
+          id
+          name
+          locationID
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
         nextToken
         startedAt
       }
       Containers {
+        items {
+          id
+          name
+          areaID
+          locationID
+          parentContainerID
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
         nextToken
         startedAt
       }
       Items {
+        items {
+          id
+          name
+          locationID
+          containerID
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
         nextToken
         startedAt
       }

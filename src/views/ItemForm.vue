@@ -6,7 +6,7 @@
     <label for="item-container-select">Container</label>
     <select id="item-container-select" v-model="containerId">
       <option v-for="container in containers" :key="container.id" :value="container.id">
-        {{ containerHierarchyToString(container) }}
+        {{ container.ancestors.asString + container.name }}
       </option>
     </select>
     <span></span>
@@ -20,7 +20,7 @@
   <ul class="item-list">
     <li v-for="item in items" :key="item.id">
       <span>{{ item.name }}</span>
-      <span>{{ item.container && item.container.name }}</span>
+      <span>{{ item.container && (item.container.ancestors.asString + item.container.name) }}</span>
       <button @click="deleteItem(item.id)">Delete</button>
     </li>
   </ul>
@@ -46,28 +46,13 @@ export default {
     ...mapActions(["addItem", "deleteItem"]),
     async addNewItem() {
       this.loading = true;
-      await this.addItem(this.newItemName, this.containerId);
+      await this.addItem({name: this.newItemName, containerId: this.containerId});
       this.resetForm();
       this.loading = false;
     },
     resetForm() {
       this.newItemName = "";
       this.containerId = "";
-    },
-    containerHierarchyToString(container) {
-      const hierarchy = [];
-      let currContainer = container;
-      do {
-        hierarchy.push(currContainer);
-        currContainer = this.containers.find(
-          (container) => container.id === currContainer.parentContainerID
-        );
-      } while (currContainer);
-
-      hierarchy.reverse()
-      const area = hierarchy[0].area;
-      const hierarchyString = hierarchy.map(c => c.name).join(" / ");
-      return area ? area.name + " > " + hierarchyString : hierarchyString;
     },
   },
 };
@@ -83,7 +68,7 @@ export default {
 
 .item-list li {
   display: grid;
-  grid-template-columns: 1fr 1fr auto;
+  grid-template-columns: 1fr 2fr auto;
   gap: 1rem;
 }
 </style>

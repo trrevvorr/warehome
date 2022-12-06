@@ -137,12 +137,35 @@ export const getContainer = /* GraphQL */ `
       name
       areaID
       Items {
+        items {
+          id
+          name
+          locationID
+          containerID
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
         nextToken
         startedAt
       }
       locationID
       parentContainerID
       Containers {
+        items {
+          id
+          name
+          areaID
+          locationID
+          parentContainerID
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
         nextToken
         startedAt
       }
@@ -165,8 +188,16 @@ export const listContainers = /* GraphQL */ `
         id
         name
         areaID
+        Items {
+          nextToken
+          startedAt
+        }
         locationID
         parentContainerID
+        Containers {
+          nextToken
+          startedAt
+        }
         createdAt
         updatedAt
         _version
@@ -195,8 +226,16 @@ export const syncContainers = /* GraphQL */ `
         id
         name
         areaID
+        Items {
+          nextToken
+          startedAt
+        }
         locationID
         parentContainerID
+        Containers {
+          nextToken
+          startedAt
+        }
         createdAt
         updatedAt
         _version
@@ -227,8 +266,16 @@ export const containersByAreaID = /* GraphQL */ `
         id
         name
         areaID
+        Items {
+          nextToken
+          startedAt
+        }
         locationID
         parentContainerID
+        Containers {
+          nextToken
+          startedAt
+        }
         createdAt
         updatedAt
         _version
@@ -259,8 +306,16 @@ export const containersByLocationID = /* GraphQL */ `
         id
         name
         areaID
+        Items {
+          nextToken
+          startedAt
+        }
         locationID
         parentContainerID
+        Containers {
+          nextToken
+          startedAt
+        }
         createdAt
         updatedAt
         _version
@@ -291,8 +346,16 @@ export const containersByParentContainerID = /* GraphQL */ `
         id
         name
         areaID
+        Items {
+          nextToken
+          startedAt
+        }
         locationID
         parentContainerID
+        Containers {
+          nextToken
+          startedAt
+        }
         createdAt
         updatedAt
         _version
@@ -311,6 +374,18 @@ export const getArea = /* GraphQL */ `
       name
       locationID
       Containers {
+        items {
+          id
+          name
+          areaID
+          locationID
+          parentContainerID
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
         nextToken
         startedAt
       }
@@ -333,6 +408,10 @@ export const listAreas = /* GraphQL */ `
         id
         name
         locationID
+        Containers {
+          nextToken
+          startedAt
+        }
         createdAt
         updatedAt
         _version
@@ -361,6 +440,10 @@ export const syncAreas = /* GraphQL */ `
         id
         name
         locationID
+        Containers {
+          nextToken
+          startedAt
+        }
         createdAt
         updatedAt
         _version
@@ -391,6 +474,10 @@ export const areasByLocationID = /* GraphQL */ `
         id
         name
         locationID
+        Containers {
+          nextToken
+          startedAt
+        }
         createdAt
         updatedAt
         _version
@@ -408,14 +495,47 @@ export const getLocation = /* GraphQL */ `
       id
       name
       Areas {
+        items {
+          id
+          name
+          locationID
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
         nextToken
         startedAt
       }
       Containers {
+        items {
+          id
+          name
+          areaID
+          locationID
+          parentContainerID
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
         nextToken
         startedAt
       }
       Items {
+        items {
+          id
+          name
+          locationID
+          containerID
+          createdAt
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
         nextToken
         startedAt
       }
@@ -437,6 +557,18 @@ export const listLocations = /* GraphQL */ `
       items {
         id
         name
+        Areas {
+          nextToken
+          startedAt
+        }
+        Containers {
+          nextToken
+          startedAt
+        }
+        Items {
+          nextToken
+          startedAt
+        }
         createdAt
         updatedAt
         _version
@@ -464,6 +596,18 @@ export const syncLocations = /* GraphQL */ `
       items {
         id
         name
+        Areas {
+          nextToken
+          startedAt
+        }
+        Containers {
+          nextToken
+          startedAt
+        }
+        Items {
+          nextToken
+          startedAt
+        }
         createdAt
         updatedAt
         _version

@@ -1,27 +1,24 @@
 <template>
   <div class="container-list">
-    <div class="container-root list-row" v-for="container in rootContainers" :key="container.id">
-      <span><span class="area-name">{{container.area.name}} > </span>{{container.name}}</span>
-      <ContainerListRecursive v-if="(container.children.length)" :containers="container.children" />
-      <button v-else @click="deleteContainer(container.id)">Delete</button>
+    <div v-for="container in containers" :key="container.id" :class="{container: true, root: container.ancestors.containers.length === 0}" >
+      <span>
+        <span class="ancestors">{{container.ancestors.asString}}</span>
+        <span class="container-name">{{container.name}}</span>
+      </span>
+      <span>
+        <button v-if="!container.children.length" @click="deleteContainer(container.id)">Delete</button>
+      </span>
     </div>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import ContainerListRecursive from "./ContainerListRecursive.vue";
 
 export default {
   name: "ContainerList",
-  components: {
-    ContainerListRecursive,
-  },
   computed: {
     ...mapGetters(["containers"]),
-    rootContainers() {
-      return this.containers.filter((container) => !container.parentContainerID);
-    }
   },
   methods: {
     ...mapActions(["deleteContainer"]),
@@ -30,13 +27,18 @@ export default {
 </script>
 
 <style scoped>
-.container-root {
-  margin-bottom: 1rem;;
-}
 button {
   margin-left: 10px;
 }
-.area-name {
+.ancestors {
   color: #b1b1b1;
+}
+.container {
+  display: grid;
+  grid-template-columns: 1fr auto;
+}
+
+.container.root {
+  margin-top: 1rem;
 }
 </style>
