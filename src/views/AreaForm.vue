@@ -10,7 +10,7 @@
   <h3>Areas</h3>
   <ul class="area-list">
     <li v-for="area in areas" :key="area.id">
-      <span>{{ area.name }}</span>
+      <router-link class="area-name" :to="('/areas/' + area.id)">{{area.name}}</router-link>
       <button @click="deleteArea(area.id)">Delete</button>
     </li>
   </ul>

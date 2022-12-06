@@ -2,8 +2,8 @@
   <div class="header">
     <h1>{{location ? location.name : "Loading..."}}</h1>
     <div class="nav">
-      <router-link to="/areas">Areas</router-link> |
-      <router-link to="/containers">Containers</router-link> |
+      <router-link to="/areas">Areas</router-link> >
+      <router-link to="/containers">Containers</router-link> >
       <router-link to="/items">Items</router-link>
     </div>
   </div>
@@ -39,7 +39,7 @@ export default {
   margin: 0 auto;
 }
 
-#app .header {
+#app>.header {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 1rem;

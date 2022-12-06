@@ -86,8 +86,16 @@ export const createContainer = /* GraphQL */ `
           id
           name
           areaID
+          Items {
+            nextToken
+            startedAt
+          }
           locationID
           parentContainerID
+          Containers {
+            nextToken
+            startedAt
+          }
           createdAt
           updatedAt
           _version
@@ -136,8 +144,16 @@ export const updateContainer = /* GraphQL */ `
           id
           name
           areaID
+          Items {
+            nextToken
+            startedAt
+          }
           locationID
           parentContainerID
+          Containers {
+            nextToken
+            startedAt
+          }
           createdAt
           updatedAt
           _version
@@ -186,8 +202,16 @@ export const deleteContainer = /* GraphQL */ `
           id
           name
           areaID
+          Items {
+            nextToken
+            startedAt
+          }
           locationID
           parentContainerID
+          Containers {
+            nextToken
+            startedAt
+          }
           createdAt
           updatedAt
           _version
@@ -219,8 +243,16 @@ export const createArea = /* GraphQL */ `
           id
           name
           areaID
+          Items {
+            nextToken
+            startedAt
+          }
           locationID
           parentContainerID
+          Containers {
+            nextToken
+            startedAt
+          }
           createdAt
           updatedAt
           _version
@@ -252,8 +284,16 @@ export const updateArea = /* GraphQL */ `
           id
           name
           areaID
+          Items {
+            nextToken
+            startedAt
+          }
           locationID
           parentContainerID
+          Containers {
+            nextToken
+            startedAt
+          }
           createdAt
           updatedAt
           _version
@@ -285,8 +325,16 @@ export const deleteArea = /* GraphQL */ `
           id
           name
           areaID
+          Items {
+            nextToken
+            startedAt
+          }
           locationID
           parentContainerID
+          Containers {
+            nextToken
+            startedAt
+          }
           createdAt
           updatedAt
           _version
@@ -317,6 +365,10 @@ export const createLocation = /* GraphQL */ `
           id
           name
           locationID
+          Containers {
+            nextToken
+            startedAt
+          }
           createdAt
           updatedAt
           _version
@@ -331,8 +383,16 @@ export const createLocation = /* GraphQL */ `
           id
           name
           areaID
+          Items {
+            nextToken
+            startedAt
+          }
           locationID
           parentContainerID
+          Containers {
+            nextToken
+            startedAt
+          }
           createdAt
           updatedAt
           _version
@@ -378,6 +438,10 @@ export const updateLocation = /* GraphQL */ `
           id
           name
           locationID
+          Containers {
+            nextToken
+            startedAt
+          }
           createdAt
           updatedAt
           _version
@@ -392,8 +456,16 @@ export const updateLocation = /* GraphQL */ `
           id
           name
           areaID
+          Items {
+            nextToken
+            startedAt
+          }
           locationID
           parentContainerID
+          Containers {
+            nextToken
+            startedAt
+          }
           createdAt
           updatedAt
           _version
@@ -439,6 +511,10 @@ export const deleteLocation = /* GraphQL */ `
           id
           name
           locationID
+          Containers {
+            nextToken
+            startedAt
+          }
           createdAt
           updatedAt
           _version
@@ -453,8 +529,16 @@ export const deleteLocation = /* GraphQL */ `
           id
           name
           areaID
+          Items {
+            nextToken
+            startedAt
+          }
           locationID
           parentContainerID
+          Containers {
+            nextToken
+            startedAt
+          }
           createdAt
           updatedAt
           _version

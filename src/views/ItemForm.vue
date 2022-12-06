@@ -19,7 +19,7 @@
   <h3>Items</h3>
   <ul class="item-list">
     <li v-for="item in items" :key="item.id">
-      <span>{{ item.name }}</span>
+      <router-link class="item-name" :to="('/items/' + item.id)">{{item.name}}</router-link>
       <span>{{ item.container && (item.container.ancestors.asString + item.container.name) }}</span>
       <button @click="deleteItem(item.id)">Delete</button>
     </li>
