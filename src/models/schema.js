@@ -108,13 +108,6 @@ export const schema = {
                     "isRequired": false,
                     "attributes": []
                 },
-                "areaID": {
-                    "name": "areaID",
-                    "isArray": false,
-                    "type": "ID",
-                    "isRequired": false,
-                    "attributes": []
-                },
                 "Items": {
                     "name": "Items",
                     "isArray": true,
@@ -188,15 +181,6 @@ export const schema = {
                 {
                     "type": "key",
                     "properties": {
-                        "name": "byArea",
-                        "fields": [
-                            "areaID"
-                        ]
-                    }
-                },
-                {
-                    "type": "key",
-                    "properties": {
                         "name": "byLocation",
                         "fields": [
                             "locationID"
@@ -209,97 +193,6 @@ export const schema = {
                         "name": "byParentContainer",
                         "fields": [
                             "parentContainerID"
-                        ]
-                    }
-                },
-                {
-                    "type": "auth",
-                    "properties": {
-                        "rules": [
-                            {
-                                "allow": "public",
-                                "operations": [
-                                    "create",
-                                    "update",
-                                    "delete",
-                                    "read"
-                                ]
-                            }
-                        ]
-                    }
-                }
-            ]
-        },
-        "Area": {
-            "name": "Area",
-            "fields": {
-                "id": {
-                    "name": "id",
-                    "isArray": false,
-                    "type": "ID",
-                    "isRequired": true,
-                    "attributes": []
-                },
-                "name": {
-                    "name": "name",
-                    "isArray": false,
-                    "type": "String",
-                    "isRequired": false,
-                    "attributes": []
-                },
-                "locationID": {
-                    "name": "locationID",
-                    "isArray": false,
-                    "type": "ID",
-                    "isRequired": true,
-                    "attributes": []
-                },
-                "Containers": {
-                    "name": "Containers",
-                    "isArray": true,
-                    "type": {
-                        "model": "Container"
-                    },
-                    "isRequired": false,
-                    "attributes": [],
-                    "isArrayNullable": true,
-                    "association": {
-                        "connectionType": "HAS_MANY",
-                        "associatedWith": [
-                            "areaID"
-                        ]
-                    }
-                },
-                "createdAt": {
-                    "name": "createdAt",
-                    "isArray": false,
-                    "type": "AWSDateTime",
-                    "isRequired": false,
-                    "attributes": [],
-                    "isReadOnly": true
-                },
-                "updatedAt": {
-                    "name": "updatedAt",
-                    "isArray": false,
-                    "type": "AWSDateTime",
-                    "isRequired": false,
-                    "attributes": [],
-                    "isReadOnly": true
-                }
-            },
-            "syncable": true,
-            "pluralName": "Areas",
-            "attributes": [
-                {
-                    "type": "model",
-                    "properties": {}
-                },
-                {
-                    "type": "key",
-                    "properties": {
-                        "name": "byLocation",
-                        "fields": [
-                            "locationID"
                         ]
                     }
                 },
@@ -337,22 +230,6 @@ export const schema = {
                     "type": "String",
                     "isRequired": false,
                     "attributes": []
-                },
-                "Areas": {
-                    "name": "Areas",
-                    "isArray": true,
-                    "type": {
-                        "model": "Area"
-                    },
-                    "isRequired": false,
-                    "attributes": [],
-                    "isArrayNullable": true,
-                    "association": {
-                        "connectionType": "HAS_MANY",
-                        "associatedWith": [
-                            "locationID"
-                        ]
-                    }
                 },
                 "Containers": {
                     "name": "Containers",
@@ -432,5 +309,5 @@ export const schema = {
     "enums": {},
     "nonModels": {},
     "codegenVersion": "3.3.2",
-    "version": "a10ac8a0718668f2c45d90bb27cf5d99"
+    "version": "25928669df78b6049dcdca02f0fbbd4a"
 };

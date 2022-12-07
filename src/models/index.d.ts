@@ -45,7 +45,6 @@ type EagerContainer = {
   };
   readonly id: string;
   readonly name?: string | null;
-  readonly areaID?: string | null;
   readonly Items?: (Item | null)[] | null;
   readonly locationID: string;
   readonly parentContainerID?: string | null;
@@ -61,7 +60,6 @@ type LazyContainer = {
   };
   readonly id: string;
   readonly name?: string | null;
-  readonly areaID?: string | null;
   readonly Items: AsyncCollection<Item>;
   readonly locationID: string;
   readonly parentContainerID?: string | null;
@@ -76,38 +74,6 @@ export declare const Container: (new (init: ModelInit<Container>) => Container) 
   copyOf(source: Container, mutator: (draft: MutableModel<Container>) => MutableModel<Container> | void): Container;
 }
 
-type EagerArea = {
-  readonly [__modelMeta__]: {
-    identifier: ManagedIdentifier<Area, 'id'>;
-    readOnlyFields: 'createdAt' | 'updatedAt';
-  };
-  readonly id: string;
-  readonly name?: string | null;
-  readonly locationID: string;
-  readonly Containers?: (Container | null)[] | null;
-  readonly createdAt?: string | null;
-  readonly updatedAt?: string | null;
-}
-
-type LazyArea = {
-  readonly [__modelMeta__]: {
-    identifier: ManagedIdentifier<Area, 'id'>;
-    readOnlyFields: 'createdAt' | 'updatedAt';
-  };
-  readonly id: string;
-  readonly name?: string | null;
-  readonly locationID: string;
-  readonly Containers: AsyncCollection<Container>;
-  readonly createdAt?: string | null;
-  readonly updatedAt?: string | null;
-}
-
-export declare type Area = LazyLoading extends LazyLoadingDisabled ? EagerArea : LazyArea
-
-export declare const Area: (new (init: ModelInit<Area>) => Area) & {
-  copyOf(source: Area, mutator: (draft: MutableModel<Area>) => MutableModel<Area> | void): Area;
-}
-
 type EagerLocation = {
   readonly [__modelMeta__]: {
     identifier: ManagedIdentifier<Location, 'id'>;
@@ -115,7 +81,6 @@ type EagerLocation = {
   };
   readonly id: string;
   readonly name?: string | null;
-  readonly Areas?: (Area | null)[] | null;
   readonly Containers?: (Container | null)[] | null;
   readonly Items?: (Item | null)[] | null;
   readonly createdAt?: string | null;
@@ -129,7 +94,6 @@ type LazyLocation = {
   };
   readonly id: string;
   readonly name?: string | null;
-  readonly Areas: AsyncCollection<Area>;
   readonly Containers: AsyncCollection<Container>;
   readonly Items: AsyncCollection<Item>;
   readonly createdAt?: string | null;

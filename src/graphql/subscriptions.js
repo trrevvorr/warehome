@@ -53,7 +53,6 @@ export const onCreateContainer = /* GraphQL */ `
     onCreateContainer(filter: $filter) {
       id
       name
-      areaID
       Items {
         items {
           id
@@ -75,7 +74,6 @@ export const onCreateContainer = /* GraphQL */ `
         items {
           id
           name
-          areaID
           Items {
             nextToken
             startedAt
@@ -110,7 +108,6 @@ export const onUpdateContainer = /* GraphQL */ `
     onUpdateContainer(filter: $filter) {
       id
       name
-      areaID
       Items {
         items {
           id
@@ -132,7 +129,6 @@ export const onUpdateContainer = /* GraphQL */ `
         items {
           id
           name
-          areaID
           Items {
             nextToken
             startedAt
@@ -167,7 +163,6 @@ export const onDeleteContainer = /* GraphQL */ `
     onDeleteContainer(filter: $filter) {
       id
       name
-      areaID
       Items {
         items {
           id
@@ -189,121 +184,6 @@ export const onDeleteContainer = /* GraphQL */ `
         items {
           id
           name
-          areaID
-          Items {
-            nextToken
-            startedAt
-          }
-          locationID
-          parentContainerID
-          Containers {
-            nextToken
-            startedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-        nextToken
-        startedAt
-      }
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-    }
-  }
-`;
-export const onCreateArea = /* GraphQL */ `
-  subscription OnCreateArea($filter: ModelSubscriptionAreaFilterInput) {
-    onCreateArea(filter: $filter) {
-      id
-      name
-      locationID
-      Containers {
-        items {
-          id
-          name
-          areaID
-          Items {
-            nextToken
-            startedAt
-          }
-          locationID
-          parentContainerID
-          Containers {
-            nextToken
-            startedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-        nextToken
-        startedAt
-      }
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-    }
-  }
-`;
-export const onUpdateArea = /* GraphQL */ `
-  subscription OnUpdateArea($filter: ModelSubscriptionAreaFilterInput) {
-    onUpdateArea(filter: $filter) {
-      id
-      name
-      locationID
-      Containers {
-        items {
-          id
-          name
-          areaID
-          Items {
-            nextToken
-            startedAt
-          }
-          locationID
-          parentContainerID
-          Containers {
-            nextToken
-            startedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-        nextToken
-        startedAt
-      }
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-    }
-  }
-`;
-export const onDeleteArea = /* GraphQL */ `
-  subscription OnDeleteArea($filter: ModelSubscriptionAreaFilterInput) {
-    onDeleteArea(filter: $filter) {
-      id
-      name
-      locationID
-      Containers {
-        items {
-          id
-          name
-          areaID
           Items {
             nextToken
             startedAt
@@ -336,29 +216,10 @@ export const onCreateLocation = /* GraphQL */ `
     onCreateLocation(filter: $filter) {
       id
       name
-      Areas {
-        items {
-          id
-          name
-          locationID
-          Containers {
-            nextToken
-            startedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-        nextToken
-        startedAt
-      }
       Containers {
         items {
           id
           name
-          areaID
           Items {
             nextToken
             startedAt
@@ -406,29 +267,10 @@ export const onUpdateLocation = /* GraphQL */ `
     onUpdateLocation(filter: $filter) {
       id
       name
-      Areas {
-        items {
-          id
-          name
-          locationID
-          Containers {
-            nextToken
-            startedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-        nextToken
-        startedAt
-      }
       Containers {
         items {
           id
           name
-          areaID
           Items {
             nextToken
             startedAt
@@ -476,29 +318,10 @@ export const onDeleteLocation = /* GraphQL */ `
     onDeleteLocation(filter: $filter) {
       id
       name
-      Areas {
-        items {
-          id
-          name
-          locationID
-          Containers {
-            nextToken
-            startedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-        nextToken
-        startedAt
-      }
       Containers {
         items {
           id
           name
-          areaID
           Items {
             nextToken
             startedAt

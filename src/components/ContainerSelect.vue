@@ -34,43 +34,14 @@ export default {
     ...mapGetters(["containers"]),
     options() {
       const rootContainers = this.containers.filter((c) => c.parentContainerID === null);
-      const areas = {};
-
-      // add areas
-      rootContainers.forEach((c) => {
-        if (c.ancestors.area) {
-          areas[c.ancestors.area.id] = c.ancestors.area;
-        }
-      });
-      const options = Object.values(areas).map((area) => ({
-        label: area.name,
-        key: area.id,
-        disabled: true,
-        children: this.containersOptionsRecursive(
-          rootContainers.filter((c) => c.areaID === area.id)
-        ),
-      }));
-
-      // add root containers without area
-      const rootContainersWithoutAreas = rootContainers.filter((c) => c.areaID === null);
-      if (rootContainersWithoutAreas.length) {
-        options.push({
-          label: "No Area",
-          key: "no-area",
-          disabled: true,
-          children: this.containersOptionsRecursive(rootContainersWithoutAreas),
-        });
-      }
-
-      return options;
+      return this.containersOptionsRecursive(rootContainers);
     },
   },
   methods: {
-    containersOptionsRecursive(containers, root) {
+    containersOptionsRecursive(containers) {
       const options = containers.map((container) => ({
         label: container.name,
         key: container.id,
-        type: root ? "group" : false,
         children: this.containersOptionsRecursive(container.children),
       }));
 

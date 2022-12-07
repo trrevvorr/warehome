@@ -2,7 +2,6 @@
   <div class="header">
     <h1>{{location ? location.name : "Loading..."}}</h1>
     <div class="nav">
-      <router-link to="/areas">Areas</router-link> >
       <router-link to="/containers">Containers</router-link> >
       <router-link to="/items">Items</router-link>
     </div>

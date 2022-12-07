@@ -135,7 +135,6 @@ export const getContainer = /* GraphQL */ `
     getContainer(id: $id) {
       id
       name
-      areaID
       Items {
         items {
           id
@@ -157,7 +156,6 @@ export const getContainer = /* GraphQL */ `
         items {
           id
           name
-          areaID
           Items {
             nextToken
             startedAt
@@ -195,7 +193,6 @@ export const listContainers = /* GraphQL */ `
       items {
         id
         name
-        areaID
         Items {
           items {
             id
@@ -217,7 +214,6 @@ export const listContainers = /* GraphQL */ `
           items {
             id
             name
-            areaID
             locationID
             parentContainerID
             createdAt
@@ -256,7 +252,6 @@ export const syncContainers = /* GraphQL */ `
       items {
         id
         name
-        areaID
         Items {
           items {
             id
@@ -278,70 +273,6 @@ export const syncContainers = /* GraphQL */ `
           items {
             id
             name
-            areaID
-            locationID
-            parentContainerID
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          nextToken
-          startedAt
-        }
-        createdAt
-        updatedAt
-        _version
-        _deleted
-        _lastChangedAt
-      }
-      nextToken
-      startedAt
-    }
-  }
-`;
-export const containersByAreaID = /* GraphQL */ `
-  query ContainersByAreaID(
-    $areaID: ID!
-    $sortDirection: ModelSortDirection
-    $filter: ModelContainerFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    containersByAreaID(
-      areaID: $areaID
-      sortDirection: $sortDirection
-      filter: $filter
-      limit: $limit
-      nextToken: $nextToken
-    ) {
-      items {
-        id
-        name
-        areaID
-        Items {
-          items {
-            id
-            name
-            locationID
-            containerID
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          nextToken
-          startedAt
-        }
-        locationID
-        parentContainerID
-        Containers {
-          items {
-            id
-            name
-            areaID
             locationID
             parentContainerID
             createdAt
@@ -382,7 +313,6 @@ export const containersByLocationID = /* GraphQL */ `
       items {
         id
         name
-        areaID
         Items {
           items {
             id
@@ -404,7 +334,6 @@ export const containersByLocationID = /* GraphQL */ `
           items {
             id
             name
-            areaID
             locationID
             parentContainerID
             createdAt
@@ -445,7 +374,6 @@ export const containersByParentContainerID = /* GraphQL */ `
       items {
         id
         name
-        areaID
         Items {
           items {
             id
@@ -467,173 +395,6 @@ export const containersByParentContainerID = /* GraphQL */ `
           items {
             id
             name
-            areaID
-            locationID
-            parentContainerID
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          nextToken
-          startedAt
-        }
-        createdAt
-        updatedAt
-        _version
-        _deleted
-        _lastChangedAt
-      }
-      nextToken
-      startedAt
-    }
-  }
-`;
-export const getArea = /* GraphQL */ `
-  query GetArea($id: ID!) {
-    getArea(id: $id) {
-      id
-      name
-      locationID
-      Containers {
-        items {
-          id
-          name
-          areaID
-          Items {
-            nextToken
-            startedAt
-          }
-          locationID
-          parentContainerID
-          Containers {
-            nextToken
-            startedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-        nextToken
-        startedAt
-      }
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-    }
-  }
-`;
-export const listAreas = /* GraphQL */ `
-  query ListAreas(
-    $filter: ModelAreaFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    listAreas(filter: $filter, limit: $limit, nextToken: $nextToken) {
-      items {
-        id
-        name
-        locationID
-        Containers {
-          items {
-            id
-            name
-            areaID
-            locationID
-            parentContainerID
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          nextToken
-          startedAt
-        }
-        createdAt
-        updatedAt
-        _version
-        _deleted
-        _lastChangedAt
-      }
-      nextToken
-      startedAt
-    }
-  }
-`;
-export const syncAreas = /* GraphQL */ `
-  query SyncAreas(
-    $filter: ModelAreaFilterInput
-    $limit: Int
-    $nextToken: String
-    $lastSync: AWSTimestamp
-  ) {
-    syncAreas(
-      filter: $filter
-      limit: $limit
-      nextToken: $nextToken
-      lastSync: $lastSync
-    ) {
-      items {
-        id
-        name
-        locationID
-        Containers {
-          items {
-            id
-            name
-            areaID
-            locationID
-            parentContainerID
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          nextToken
-          startedAt
-        }
-        createdAt
-        updatedAt
-        _version
-        _deleted
-        _lastChangedAt
-      }
-      nextToken
-      startedAt
-    }
-  }
-`;
-export const areasByLocationID = /* GraphQL */ `
-  query AreasByLocationID(
-    $locationID: ID!
-    $sortDirection: ModelSortDirection
-    $filter: ModelAreaFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    areasByLocationID(
-      locationID: $locationID
-      sortDirection: $sortDirection
-      filter: $filter
-      limit: $limit
-      nextToken: $nextToken
-    ) {
-      items {
-        id
-        name
-        locationID
-        Containers {
-          items {
-            id
-            name
-            areaID
             locationID
             parentContainerID
             createdAt
@@ -661,29 +422,10 @@ export const getLocation = /* GraphQL */ `
     getLocation(id: $id) {
       id
       name
-      Areas {
-        items {
-          id
-          name
-          locationID
-          Containers {
-            nextToken
-            startedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-        nextToken
-        startedAt
-      }
       Containers {
         items {
           id
           name
-          areaID
           Items {
             nextToken
             startedAt
@@ -736,25 +478,10 @@ export const listLocations = /* GraphQL */ `
       items {
         id
         name
-        Areas {
-          items {
-            id
-            name
-            locationID
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          nextToken
-          startedAt
-        }
         Containers {
           items {
             id
             name
-            areaID
             locationID
             parentContainerID
             createdAt
@@ -808,25 +535,10 @@ export const syncLocations = /* GraphQL */ `
       items {
         id
         name
-        Areas {
-          items {
-            id
-            name
-            locationID
-            createdAt
-            updatedAt
-            _version
-            _deleted
-            _lastChangedAt
-          }
-          nextToken
-          startedAt
-        }
         Containers {
           items {
             id
             name
-            areaID
             locationID
             parentContainerID
             createdAt

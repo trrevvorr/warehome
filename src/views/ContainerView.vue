@@ -9,10 +9,6 @@
         Delete
       </button>
     </div>
-
-    <div class="label">Area</div>
-    <router-link v-if="area" class="data" :to="'/areas/' + area.id">{{ area.name }}</router-link>
-    <div v-else class="subtitle">None</div>
     
     <div class="label">Parent Container</div>
     <ContainerLink v-if="parentContainer" :container="parentContainer" />
@@ -57,7 +53,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["containers", "areas"]),
+    ...mapGetters(["containers"]),
     container() {
       return this.containers.find((c) => c.id === this.containerId);
     },
@@ -66,9 +62,6 @@ export default {
         this.container.parentContainerID &&
         this.containers.find((c) => c.id === this.container.parentContainerID)
       );
-    },
-    area() {
-      return this.container.areaID && this.areas.find((a) => a.id === this.container.areaID);
     },
   },
   watch: {

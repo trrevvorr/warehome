@@ -63,7 +63,6 @@ export const createContainer = /* GraphQL */ `
     createContainer(input: $input, condition: $condition) {
       id
       name
-      areaID
       Items {
         items {
           id
@@ -85,7 +84,6 @@ export const createContainer = /* GraphQL */ `
         items {
           id
           name
-          areaID
           Items {
             nextToken
             startedAt
@@ -121,7 +119,6 @@ export const updateContainer = /* GraphQL */ `
     updateContainer(input: $input, condition: $condition) {
       id
       name
-      areaID
       Items {
         items {
           id
@@ -143,7 +140,6 @@ export const updateContainer = /* GraphQL */ `
         items {
           id
           name
-          areaID
           Items {
             nextToken
             startedAt
@@ -179,7 +175,6 @@ export const deleteContainer = /* GraphQL */ `
     deleteContainer(input: $input, condition: $condition) {
       id
       name
-      areaID
       Items {
         items {
           id
@@ -201,130 +196,6 @@ export const deleteContainer = /* GraphQL */ `
         items {
           id
           name
-          areaID
-          Items {
-            nextToken
-            startedAt
-          }
-          locationID
-          parentContainerID
-          Containers {
-            nextToken
-            startedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-        nextToken
-        startedAt
-      }
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-    }
-  }
-`;
-export const createArea = /* GraphQL */ `
-  mutation CreateArea(
-    $input: CreateAreaInput!
-    $condition: ModelAreaConditionInput
-  ) {
-    createArea(input: $input, condition: $condition) {
-      id
-      name
-      locationID
-      Containers {
-        items {
-          id
-          name
-          areaID
-          Items {
-            nextToken
-            startedAt
-          }
-          locationID
-          parentContainerID
-          Containers {
-            nextToken
-            startedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-        nextToken
-        startedAt
-      }
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-    }
-  }
-`;
-export const updateArea = /* GraphQL */ `
-  mutation UpdateArea(
-    $input: UpdateAreaInput!
-    $condition: ModelAreaConditionInput
-  ) {
-    updateArea(input: $input, condition: $condition) {
-      id
-      name
-      locationID
-      Containers {
-        items {
-          id
-          name
-          areaID
-          Items {
-            nextToken
-            startedAt
-          }
-          locationID
-          parentContainerID
-          Containers {
-            nextToken
-            startedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-        nextToken
-        startedAt
-      }
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-    }
-  }
-`;
-export const deleteArea = /* GraphQL */ `
-  mutation DeleteArea(
-    $input: DeleteAreaInput!
-    $condition: ModelAreaConditionInput
-  ) {
-    deleteArea(input: $input, condition: $condition) {
-      id
-      name
-      locationID
-      Containers {
-        items {
-          id
-          name
-          areaID
           Items {
             nextToken
             startedAt
@@ -360,29 +231,10 @@ export const createLocation = /* GraphQL */ `
     createLocation(input: $input, condition: $condition) {
       id
       name
-      Areas {
-        items {
-          id
-          name
-          locationID
-          Containers {
-            nextToken
-            startedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-        nextToken
-        startedAt
-      }
       Containers {
         items {
           id
           name
-          areaID
           Items {
             nextToken
             startedAt
@@ -433,29 +285,10 @@ export const updateLocation = /* GraphQL */ `
     updateLocation(input: $input, condition: $condition) {
       id
       name
-      Areas {
-        items {
-          id
-          name
-          locationID
-          Containers {
-            nextToken
-            startedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-        nextToken
-        startedAt
-      }
       Containers {
         items {
           id
           name
-          areaID
           Items {
             nextToken
             startedAt
@@ -506,29 +339,10 @@ export const deleteLocation = /* GraphQL */ `
     deleteLocation(input: $input, condition: $condition) {
       id
       name
-      Areas {
-        items {
-          id
-          name
-          locationID
-          Containers {
-            nextToken
-            startedAt
-          }
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
-        nextToken
-        startedAt
-      }
       Containers {
         items {
           id
           name
-          areaID
           Items {
             nextToken
             startedAt

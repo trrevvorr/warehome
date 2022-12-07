@@ -8,14 +8,6 @@
     <container-select
       :value="parentContainerId"
       @selectOption="(val) => (parentContainerId = val)"
-      :disabled="!!areaId"
-    />
-
-    <label for="container-area-select">Area</label>
-    <area-select
-      :value="areaId"
-      @selectOption="(val) => (areaId = val)"
-      :disabled="!!parentContainerId"
     />
 
     <span></span>
@@ -23,7 +15,7 @@
       <button @click="resetForm">Reset</button>
       <button
         @click="addNewContainer"
-        :disabled="!newContainerName || !(!!parentContainerId ^ !!areaId) || loading"
+        :disabled="!newContainerName || loading"
       >
         Create Container
       </button>
@@ -38,21 +30,19 @@
 import { mapActions, mapGetters } from "vuex";
 import ContainerList from "../components/ContainerList.vue";
 import ContainerSelect from "../components/ContainerSelect.vue";
-import AreaSelect from "../components/AreaSelect.vue";
 
 export default {
   name: "ContainerForm",
-  components: { ContainerList, ContainerSelect, AreaSelect },
+  components: { ContainerList, ContainerSelect },
   data() {
     return {
       newContainerName: "",
-      areaId: "",
       parentContainerId: "",
       loading: false,
     };
   },
   computed: {
-    ...mapGetters(["containers", "areas"]),
+    ...mapGetters(["containers"]),
   },
   methods: {
     ...mapActions(["addContainer", "deleteContainer"]),
@@ -60,7 +50,6 @@ export default {
       this.loading = true;
       await this.addContainer({
         name: this.newContainerName,
-        areaId: this.areaId,
         parentContainerId: this.parentContainerId,
       });
       this.resetForm();
@@ -68,7 +57,6 @@ export default {
     },
     resetForm() {
       this.newContainerName = "";
-      this.areaId = "";
       this.parentContainerId = "";
     },
   },
