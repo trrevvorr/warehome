@@ -6,16 +6,17 @@
     :value="value"
     @update:value="handleChange"
     :disabled="disabled"
-  />
+    show-path
+    />
 </template>
 
 <script>
-import { NTreeSelect } from "naive-ui";
+import { NTreeSelect} from "naive-ui";
 import { mapGetters } from "vuex";
 
 export default {
   name: "ContainerSelect",
-  components: { NTreeSelect },
+  components: { NTreeSelect},
   emits: ["selectOption"],
   props: {
     value: {

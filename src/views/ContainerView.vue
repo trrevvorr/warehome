@@ -5,15 +5,19 @@
         <h2>{{ container.name }}</h2>
         <span class="subtitle">Container</span>
       </span>
-      <button :disabled="container.children.length" @click="deleteContainer(container.id)">
-        Delete
-      </button>
+      <n-tooltip v-if="(container.children.length > 0 || (items && items.length > 0))">
+        <template #trigger>
+          <n-button disabled type="error" tag="div"> Delete </n-button>
+        </template>
+        Cannot delete container with children or items
+      </n-tooltip>
+      <n-button v-else type="error" @click="deleteContainer(container.id)"> Delete </n-button>
     </div>
-    
+
     <div class="label">Parent Container</div>
     <ContainerLink v-if="parentContainer" :container="parentContainer" />
     <div v-else class="subtitle">None</div>
-    
+
     <div class="label">Child Containers</div>
     <ul v-if="container.children && container.children.length">
       <li v-for="child in container.children" :key="child.id">
@@ -21,15 +25,18 @@
       </li>
     </ul>
     <div v-else class="subtitle">None</div>
-    
+
     <div class="label">Items</div>
     <ul v-if="items && items.length">
       <li v-for="item in items" :key="item.id">
-        <router-link class="item-name" :to="('/items/' + item.id)">{{item.name}}</router-link>
+        <router-link class="item-name" :to="'/items/' + item.id">{{ item.name }}</router-link>
       </li>
     </ul>
     <div v-else class="subtitle">None</div>
   </div>
+  <n-alert v-else title="Not Found" type="info">
+    Container does not exist. <router-link to="/containers">View all containers</router-link>
+  </n-alert>
 </template>
 
 <script>
@@ -37,10 +44,11 @@ import { mapGetters, mapActions } from "vuex";
 import { DataStore } from "@aws-amplify/datastore";
 import { Container } from "../models";
 import ContainerLink from "../components/ContainerLink.vue";
+import { NButton, NTooltip, NAlert } from "naive-ui";
 
 export default {
   name: "ContainerView",
-  components: { ContainerLink },
+  components: { ContainerLink, NButton, NTooltip, NAlert },
   props: {
     containerId: {
       type: String,

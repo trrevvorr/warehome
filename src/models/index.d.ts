@@ -12,7 +12,7 @@ type EagerItem = {
     readOnlyFields: 'createdAt' | 'updatedAt';
   };
   readonly id: string;
-  readonly name?: string | null;
+  readonly name: string;
   readonly locationID: string;
   readonly containerID?: string | null;
   readonly createdAt?: string | null;
@@ -25,7 +25,7 @@ type LazyItem = {
     readOnlyFields: 'createdAt' | 'updatedAt';
   };
   readonly id: string;
-  readonly name?: string | null;
+  readonly name: string;
   readonly locationID: string;
   readonly containerID?: string | null;
   readonly createdAt?: string | null;
@@ -44,7 +44,7 @@ type EagerContainer = {
     readOnlyFields: 'createdAt' | 'updatedAt';
   };
   readonly id: string;
-  readonly name?: string | null;
+  readonly name: string;
   readonly Items?: (Item | null)[] | null;
   readonly locationID: string;
   readonly parentContainerID?: string | null;
@@ -59,7 +59,7 @@ type LazyContainer = {
     readOnlyFields: 'createdAt' | 'updatedAt';
   };
   readonly id: string;
-  readonly name?: string | null;
+  readonly name: string;
   readonly Items: AsyncCollection<Item>;
   readonly locationID: string;
   readonly parentContainerID?: string | null;
@@ -80,7 +80,7 @@ type EagerLocation = {
     readOnlyFields: 'createdAt' | 'updatedAt';
   };
   readonly id: string;
-  readonly name?: string | null;
+  readonly name: string;
   readonly Containers?: (Container | null)[] | null;
   readonly Items?: (Item | null)[] | null;
   readonly createdAt?: string | null;
@@ -93,7 +93,7 @@ type LazyLocation = {
     readOnlyFields: 'createdAt' | 'updatedAt';
   };
   readonly id: string;
-  readonly name?: string | null;
+  readonly name: string;
   readonly Containers: AsyncCollection<Container>;
   readonly Items: AsyncCollection<Item>;
   readonly createdAt?: string | null;
