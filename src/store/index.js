@@ -92,11 +92,11 @@ export default createStore({
 });
 
 function completeContainer(container, state) {
-  return {
+  return container ?  {
     ...container,
     children: getContainerChildren(container, state.containers),
     ancestors: getContainerAncestors(container, state.containers),
-  };
+  } : null;
 }
 
 function getContainerChildren(root, containers) {

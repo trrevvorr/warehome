@@ -1,15 +1,6 @@
 <template>
   <h2>Item</h2>
-  <div class="form">
-    <label for="item-name-input">Name</label>
-    <input id="item-name-input" type="text" v-model="newItemName" />
-    <label for="item-container-select">Container</label>
-    <container-select :value="containerId" @selectOption="(val) => (containerId = val)" />
-    <span></span>
-    <div>
-      <button @click="addNewItem" :disabled="!newItemName || loading">Create Item</button>
-    </div>
-  </div>
+  <NewItemForm />
 
   <h3>Items</h3>
   <ul class="item-list">
@@ -22,12 +13,12 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import ContainerSelect from "../components/ContainerSelect.vue";
 import ContainerLink from "../components/ContainerLink.vue";
+import NewItemForm from "../components/NewItemForm.vue";
 
 export default {
   name: "ItemForm",
-  components: { ContainerSelect, ContainerLink },
+  components: { ContainerLink, NewItemForm },
   data() {
     return {
       newItemName: "",

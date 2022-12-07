@@ -39,7 +39,8 @@ export default {
   },
   methods: {
     containersOptionsRecursive(containers) {
-      const options = containers.map((container) => ({
+      const options = containers
+      .map((container) => ({
         label: container.name,
         key: container.id,
         children: this.containersOptionsRecursive(container.children),

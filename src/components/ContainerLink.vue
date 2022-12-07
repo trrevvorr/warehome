@@ -3,7 +3,7 @@
       <span v-if="displayAncestors" class="ancestors">
         <span>{{container.ancestors.asString}}</span>
       </span>
-      <router-link class="container-name" :to="('/containers/' + container.id)">{{container.name}}</router-link>
+      <router-link class="container-name" :to="('/containers/' + container.id)">{{(container.name || container.id)}}</router-link>
     </span>
 </template>
 
