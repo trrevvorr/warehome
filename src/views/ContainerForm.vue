@@ -1,24 +1,38 @@
 <template>
-  <h2>Container</h2>
-  <NewContainerForm />
+  <div class="header">
+    <h2>Containers</h2>
+    <span></span>
+    <n-input v-model:value="query" placeholder="search containers" clearable>
+      <template #prefix>
+        <n-icon :component="Search12Regular" />
+      </template>
+    </n-input>
+    <n-button @click="showModal = true"> New Container </n-button>
+    <n-modal v-model:show="showModal" class="modal">
+      <n-card title="New Container" :bordered="false" role="dialog" aria-modal="true">
+        <NewContainerForm @formSubmitted="showModal = false" />
+      </n-card>
+    </n-modal>
+  </div>
 
-  <h2>Containers</h2>
-  <ContainerList />
+  <container-table :query="query" />
 </template>
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import ContainerList from "../components/ContainerList.vue";
 import NewContainerForm from "../components/NewContainerForm.vue";
+import { Search12Regular } from "@vicons/fluent";
+import { markRaw } from "vue";
+import { NModal, NCard, NIcon, NInput, NButton } from "naive-ui";
+import ContainerTable from "../components/ContainerTable.vue";
 
 export default {
   name: "ContainerForm",
-  components: { ContainerList, NewContainerForm },
+  components: { NewContainerForm, NModal, NCard, NIcon, NInput, NButton, ContainerTable},
   data() {
     return {
-      newContainerName: "",
-      parentContainerId: "",
-      loading: false,
+      query: "",
+      showModal: false,
       formValue: {
         name: "",
         parent: "",
@@ -35,48 +49,32 @@ export default {
           trigger: ["input", "blur"],
         },
       },
+      Search12Regular: markRaw(Search12Regular),
     };
   },
   computed: {
     ...mapGetters(["containers"]),
+    filteredContainers() {
+      return this.containers.filter((c) => c.name.toLowerCase().includes(this.query.toLowerCase()));
+    },
   },
   methods: {
     ...mapActions(["addContainer", "deleteContainer"]),
-    async addNewContainer() {
-      this.loading = true;
-      await this.addContainer({
-        name: this.newContainerName,
-        parentContainerId: this.parentContainerId,
-      });
-      this.resetForm();
-      this.loading = false;
-    },
-    resetForm() {
-      this.newContainerName = "";
-      this.parentContainerId = "";
-    },
-    handleValidateClick(e) {
-      e.preventDefault();
-      console.log(this.$refs.formRef.value);
-      this.$refs.formRef.focus();
-      this.$refs.formRef.value?.validate((errors) => {
-        if (!errors) {
-          console.info("Valid");
-        } else {
-          console.log(errors);
-        }
-      });
-    },
   },
 };
 </script>
 
-<style>
-.form {
-  gap: 1rem;
+<style scoped>
+.modal {
+  margin: 1rem;
 }
 
-button {
-  display: inline-block;
+.header {
+  line-height: 1rem;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  grid-gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: center;
 }
 </style>
