@@ -7,7 +7,11 @@
         <n-icon :component="Search12Regular" />
       </template>
     </n-input>
-    <n-button @click="showModal = true"> New Container </n-button>
+    <n-button @click="showModal = true">
+      <template #icon>
+        <n-icon><Add12Regular /></n-icon>
+      </template>
+    </n-button>
     <n-modal v-model:show="showModal" class="modal">
       <n-card title="New Container" :bordered="false" role="dialog" aria-modal="true">
         <NewContainerForm @formSubmitted="showModal = false" />
@@ -21,14 +25,23 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import NewContainerForm from "../components/NewContainerForm.vue";
-import { Search12Regular } from "@vicons/fluent";
+import { Search12Regular, Add12Regular } from "@vicons/fluent";
 import { markRaw } from "vue";
 import { NModal, NCard, NIcon, NInput, NButton } from "naive-ui";
 import ContainerTable from "../components/ContainerTable.vue";
 
 export default {
   name: "ContainerForm",
-  components: { NewContainerForm, NModal, NCard, NIcon, NInput, NButton, ContainerTable},
+  components: {
+    NewContainerForm,
+    NModal,
+    NCard,
+    NIcon,
+    NInput,
+    NButton,
+    ContainerTable,
+    Add12Regular,
+  },
   data() {
     return {
       query: "",
