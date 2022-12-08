@@ -90,15 +90,11 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .header {
   display: grid;
   grid-template-columns: 1fr auto;
   margin-bottom: 2rem;
-}
-
-h2 {
-  line-height: 0rem;
 }
 
 .subtitle {

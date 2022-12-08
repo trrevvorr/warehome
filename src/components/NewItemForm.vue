@@ -1,5 +1,5 @@
 <template>
-  <n-form ref="formRef" inline :model="formValue" :rules="rules">
+  <n-form ref="formRef" :model="formValue" :rules="rules">
     <n-form-item label="Name" path="name">
       <n-input v-model:value="formValue.name" placeholder="New Item" />
     </n-form-item>
@@ -19,11 +19,12 @@
 <script setup>
 // n-form validation seems to require composition API for refs
 
-import { ref } from "vue";
+import { ref, defineEmits } from "vue";
 import { NForm, NFormItem, NInput, NButton } from "naive-ui";
 import ContainerSelect from "./ContainerSelect.vue";
 import { useStore } from "vuex";
 const store = useStore();
+const emit = defineEmits(['formSubmitted']);
 
 const formRef = ref(null);
 const formValue = ref({
@@ -59,5 +60,6 @@ async function addNewItem() {
   });
   formValue.value.name = "";
   formValue.value.container = "";
+  emit('formSubmitted');
 }
 </script>
