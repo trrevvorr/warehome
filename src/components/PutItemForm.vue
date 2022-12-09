@@ -71,7 +71,7 @@ function handleValidateClick(e) {
 async function addNewItem() {
   await store.dispatch(isNew.value ? "addItem" : "updateItem", {
     id: props.item?.id,
-    name: formValue.value.name,
+    name: formValue.value.name.trim(),
     containerId: formValue.value.container || undefined,
   });
 

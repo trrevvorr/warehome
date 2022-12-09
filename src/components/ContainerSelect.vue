@@ -8,8 +8,13 @@
       @update:value="handleChange"
       :disabled="disabled"
       show-path
-      />
-      <n-button strong :disabled="!lastSelectedContainerId" @click="handleChange(lastSelectedContainerId)">
+      :default-expanded-keys="defaultExpandedKeys"
+    />
+    <n-button
+      strong
+      :disabled="!lastSelectedContainerId"
+      @click="handleChange(lastSelectedContainerId)"
+    >
       <template #icon>
         <n-icon><ClockToolbox24Regular /></n-icon>
       </template>
@@ -18,13 +23,13 @@
 </template>
 
 <script>
-import { NTreeSelect, NButton, NIcon} from "naive-ui";
+import { NTreeSelect, NButton, NIcon } from "naive-ui";
 import { mapGetters, mapMutations } from "vuex";
 import { ClockToolbox24Regular } from "@vicons/fluent";
 
 export default {
   name: "ContainerSelect",
-  components: { NTreeSelect, NButton, NIcon, ClockToolbox24Regular},
+  components: { NTreeSelect, NButton, NIcon, ClockToolbox24Regular },
   emits: ["selectOption"],
   props: {
     value: {
@@ -45,12 +50,19 @@ export default {
       const rootContainers = this.containers.filter((c) => c.parentContainerID === null);
       return this.containersOptionsRecursive(rootContainers);
     },
+    defaultExpandedKeys() {
+      const selectedContainer = this.value
+        ? this.containers.find((c) => c.id === this.value)
+        : null;
+      return selectedContainer
+        ? selectedContainer.ancestors.containers.map((ancestor) => ancestor.id)
+        : [];
+    },
   },
   methods: {
     ...mapMutations(["updateLastSelectedContainerId"]),
     containersOptionsRecursive(containers) {
-      const options = containers
-      .map((container) => ({
+      const options = containers.map((container) => ({
         label: container.name,
         key: container.id,
         children: this.containersOptionsRecursive(container.children),
