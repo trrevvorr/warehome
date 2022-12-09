@@ -73,6 +73,26 @@ export default createStore({
         commit("updateItems", [...state.items, item]);
       });
     },
+    async updateContainer({ commit, state }, input) {
+      const originalC = await DataStore.query(Container, input.id);
+      const newC = Container.copyOf(originalC, (updated) => {
+        updated.name = input.name;
+        updated.parentContainerID = input.parentContainerId || undefined;
+      });
+      await DataStore.save(newC).then(() => {
+        commit("updateContainers", [...state.containers.filter(c => c.id !== input.id), newC]);
+      });
+    },
+    async updateItem({ commit, state }, input) {
+      const originalI = await DataStore.query(Item, input.id);
+      const newI = Item.copyOf(originalI, (updated) => {
+        updated.name = input.name;
+        updated.containerID = input.containerId || undefined;
+      });
+      await DataStore.save(newI).then(() => {
+        commit("updateItems", [...state.items.filter(i => i.id !== input.id), newI]);
+      });
+    },
     async deleteContainer({ commit, state }, id) {
       await DataStore.delete(await DataStore.query(Container, id));
       commit(

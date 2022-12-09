@@ -13,29 +13,26 @@
       </template>
     </n-button>
     <n-modal v-model:show="showModal" class="modal">
-      <n-card title="New Container" :bordered="false" role="dialog" aria-modal="true">
-        <NewContainerForm @formSubmitted="showModal = false" />
-      </n-card>
+      <put-container-form @formSubmitted="showModal = false" :container="editContainer" />
     </n-modal>
   </div>
 
-  <container-table :query="query" />
+  <container-table :query="query" @editContainer="(id) => (editContainerId = id)" />
 </template>
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import NewContainerForm from "../components/NewContainerForm.vue";
+import PutContainerForm from "../components/PutContainerForm.vue";
 import { Search12Regular, Add12Regular } from "@vicons/fluent";
 import { markRaw } from "vue";
-import { NModal, NCard, NIcon, NInput, NButton } from "naive-ui";
+import { NModal, NIcon, NInput, NButton } from "naive-ui";
 import ContainerTable from "../components/ContainerTable.vue";
 
 export default {
   name: "ContainerForm",
   components: {
-    NewContainerForm,
+    PutContainerForm,
     NModal,
-    NCard,
     NIcon,
     NInput,
     NButton,
@@ -46,30 +43,30 @@ export default {
     return {
       query: "",
       showModal: false,
-      formValue: {
-        name: "",
-        parent: "",
-      },
-      rules: {
-        name: {
-          required: true,
-          message: "Please input new container name",
-          trigger: "blur",
-        },
-        parent: {
-          required: false,
-          message: "Please input your age",
-          trigger: ["input", "blur"],
-        },
-      },
+      editContainerId: "",
       Search12Regular: markRaw(Search12Regular),
     };
+  },
+  watch: {
+    showModal(val) {
+      if (!val) {
+        this.editContainerId = "";
+      }
+    },
+    editContainer(val) {
+      if (val) {
+        this.showModal = true;
+      }
+    },
   },
   computed: {
     ...mapGetters(["containers"]),
     filteredContainers() {
       return this.containers.filter((c) => c.name.toLowerCase().includes(this.query.toLowerCase()));
     },
+    editContainer() {
+      return this.editContainerId ? this.containers.find((c) => c.id === this.editContainerId) : null;
+    }
   },
   methods: {
     ...mapActions(["addContainer", "deleteContainer"]),

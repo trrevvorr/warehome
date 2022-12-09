@@ -15,6 +15,7 @@ import { h } from "vue";
 
 export default {
   name: "ContainerTable",
+  emits: ["editContainer"],
   components: { NDataTable },
   props: {
     query: {
@@ -24,7 +25,7 @@ export default {
   },
   data() {
     return {
-      columns: this.createColumns((id) => this.$router.push({ path: "/containers/" + id })),
+      columns: this.createColumns((id) => this.$emit("editContainer", id)),
     };
   },
   computed: {

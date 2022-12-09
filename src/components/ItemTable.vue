@@ -9,6 +9,7 @@ import { h } from "vue";
 
 export default {
   name: "ItemTable",
+  emits: ["editItem"],
   components: { NDataTable },
   props: {
     query: {
@@ -18,7 +19,7 @@ export default {
   },
   data() {
     return {
-      columns: this.createColumns((id) => this.$router.push({ path: "/items/" + id })),
+      columns: this.createColumns((id) => this.$emit("editItem", id)),
     };
   },
   computed: {
