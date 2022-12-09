@@ -42,10 +42,12 @@ export default {
         {
           title: "Name",
           key: "name",
+          sorter: 'default'
         },
         {
           title: "Container",
           key: "container",
+          sorter: 'default'
         },
         {
           title: "",

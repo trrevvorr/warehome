@@ -49,7 +49,7 @@ export default {
             name: container.name,
             id: container.id,
             key: container.id,
-            items: this.items.filter(i => i.containerID === container.id).length,
+            items: this.items.filter((i) => i.containerID === container.id).length,
             children: children,
           }
         : null;

@@ -18,10 +18,15 @@ export default createStore({
           (a.ancestors.asString + a.name).localeCompare(b.ancestors.asString + b.name)
         ),
     items: (state) =>
-      state.items.map((item) => ({
-        ...item,
-        container: completeContainer(state.containers.find((container) => container.id === item.containerID), state),
-      })),
+      state.items
+        .map((item) => ({
+          ...item,
+          container: completeContainer(
+            state.containers.find((container) => container.id === item.containerID),
+            state
+          ),
+        }))
+        .sort((a, b) => b._lastChangedAt - a._lastChangedAt),
     location: (state) => ({ name: state.locationName, id: state.locationId }),
     lastSelectedContainerId: (state) => state.lastSelectedContainerId,
   },
@@ -38,14 +43,13 @@ export default createStore({
     },
     updateLastSelectedContainerId(state, id) {
       state.lastSelectedContainerId = id;
-    }
+    },
   },
   actions: {
     async loadLocation({ commit, dispatch }, id) {
       const location = await DataStore.query(Location, id);
       commit("updateLocation", location);
-      await dispatch("loadContainers")
-        .then(() => dispatch("loadItems"));
+      await dispatch("loadContainers").then(() => dispatch("loadItems"));
     },
     async loadContainers({ commit, state }) {
       const location = await DataStore.query(Location, state.locationId);
@@ -85,7 +89,7 @@ export default createStore({
         updated.parentContainerID = input.parentContainerId || undefined;
       });
       await DataStore.save(newC).then(() => {
-        commit("updateContainers", [...state.containers.filter(c => c.id !== input.id), newC]);
+        commit("updateContainers", [...state.containers.filter((c) => c.id !== input.id), newC]);
       });
     },
     async updateItem({ commit, state }, input) {
@@ -95,7 +99,7 @@ export default createStore({
         updated.containerID = input.containerId || undefined;
       });
       await DataStore.save(newI).then(() => {
-        commit("updateItems", [...state.items.filter(i => i.id !== input.id), newI]);
+        commit("updateItems", [...state.items.filter((i) => i.id !== input.id), newI]);
       });
     },
     async deleteContainer({ commit, state }, id) {
@@ -117,11 +121,13 @@ export default createStore({
 });
 
 function completeContainer(container, state) {
-  return container ?  {
-    ...container,
-    children: getContainerChildren(container, state.containers),
-    ancestors: getContainerAncestors(container, state.containers),
-  } : null;
+  return container
+    ? {
+        ...container,
+        children: getContainerChildren(container, state.containers),
+        ancestors: getContainerAncestors(container, state.containers),
+      }
+    : null;
 }
 
 function getContainerChildren(root, containers) {
@@ -130,7 +136,8 @@ function getContainerChildren(root, containers) {
     .map((container) => ({
       ...container,
       children: getContainerChildren(container, containers),
-    }));
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 function getContainerAncestors(leaf, containers) {
