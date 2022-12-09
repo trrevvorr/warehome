@@ -18,7 +18,7 @@
       </n-form-item>
       <n-form-item>
         <n-space>
-          <n-button type="error" @click="handleDeleteClick"> Delete </n-button>
+          <n-button v-if="!isNew" type="error" @click="handleDeleteClick"> Delete </n-button>
           <n-button @click="handleValidateClick" type="primary"> Save </n-button>
         </n-space>
       </n-form-item>

@@ -8,6 +8,7 @@ export default createStore({
     locationName: "",
     containers: [],
     items: [],
+    lastSelectedContainerId: null,
   },
   getters: {
     containers: (state) =>
@@ -22,6 +23,7 @@ export default createStore({
         container: completeContainer(state.containers.find((container) => container.id === item.containerID), state),
       })),
     location: (state) => ({ name: state.locationName, id: state.locationId }),
+    lastSelectedContainerId: (state) => state.lastSelectedContainerId,
   },
   mutations: {
     updateLocation(state, location) {
@@ -34,6 +36,9 @@ export default createStore({
     updateItems(state, items) {
       state.items = items;
     },
+    updateLastSelectedContainerId(state, id) {
+      state.lastSelectedContainerId = id;
+    }
   },
   actions: {
     async loadLocation({ commit, dispatch }, id) {
