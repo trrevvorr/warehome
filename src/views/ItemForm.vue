@@ -1,6 +1,8 @@
 <template>
   <div class="header">
-    <h2>Items</h2>
+    <n-h2>
+      <n-text type="primary"> Items </n-text>
+    </n-h2>
     <span></span>
     <n-input v-model:value="query" placeholder="search items" clearable>
       <template #prefix>
@@ -22,14 +24,14 @@
 <script>
 import { mapGetters } from "vuex";
 import PutItemForm from "../components/PutItemForm.vue";
-import { NModal, NIcon, NInput, NButton } from "naive-ui";
+import { NModal, NIcon, NInput, NButton, NH2, NText } from "naive-ui";
 import { markRaw } from "vue";
 import { Search12Regular, Add12Regular } from "@vicons/fluent";
 import ItemTable from "../components/ItemTable.vue";
 
 export default {
   name: "ItemForm",
-  components: { PutItemForm, NModal, NIcon, NInput, NButton, ItemTable, Add12Regular },
+  components: { PutItemForm, NModal, NIcon, NInput, NButton, NH2, NText, ItemTable, Add12Regular },
   data() {
     return {
       query: "",

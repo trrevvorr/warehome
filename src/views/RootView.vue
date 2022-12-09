@@ -1,7 +1,11 @@
 <template>
   <div id="app-header">
-    <h1>{{ isLoadingStateSuccess ? location.name : "Loading..." }}</h1>
-    <n-button strong @click="reloadData" :loading="isLoadingStateNotLoaded" >
+    <n-h1>
+      <n-text type="primary">
+        {{ isLoadingStateSuccess ? location.name : "Loading..." }}
+      </n-text>
+    </n-h1>
+    <n-button strong @click="reloadData" :loading="isLoadingStateNotLoaded">
       <template #icon>
         <n-icon><ArrowClockwise12Regular /></n-icon>
       </template>
@@ -27,7 +31,7 @@
 
 <script>
 import { mapGetters, mapMutations } from "vuex";
-import { NRadioButton, NRadioGroup, NButton, NIcon, useLoadingBar } from "naive-ui";
+import { NRadioButton, NRadioGroup, NButton, NIcon, NH1, NText, useLoadingBar } from "naive-ui";
 import { DataStore } from "@aws-amplify/datastore";
 import { ArrowClockwise12Regular } from "@vicons/fluent";
 
@@ -38,6 +42,8 @@ export default {
     NRadioGroup,
     NButton,
     NIcon,
+    NH1,
+    NText,
     ArrowClockwise12Regular,
   },
   data() {

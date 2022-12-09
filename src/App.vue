@@ -1,29 +1,36 @@
 <template>
-  <n-loading-bar-provider>
-    <root-view />
-  </n-loading-bar-provider>
+  <n-config-provider :theme="darkTheme">
+    <n-global-style />
+    <n-loading-bar-provider>
+      <root-view />
+    </n-loading-bar-provider>
+  </n-config-provider>
 </template>
 
 <script>
 import { DataStore, Hub } from "aws-amplify";
-import { NLoadingBarProvider } from "naive-ui";
+import { NLoadingBarProvider, NConfigProvider, NGlobalStyle } from "naive-ui";
 import RootView from "./views/RootView.vue";
 import { mapActions, mapMutations } from "vuex";
 import { Location } from "./models";
+import { darkTheme } from "naive-ui";
 
 export default {
   name: "App",
   components: {
     NLoadingBarProvider,
+    NConfigProvider,
+    NGlobalStyle,
     RootView,
   },
   data: () => ({
     listener: null,
+    darkTheme,
   }),
   created() {
     this.setLoadingStateLoading();
     DataStore.start();
-    
+
     this.listener = Hub.listen("datastore", async (hubData) => {
       const { event } = hubData.payload;
       if (event === "ready") {

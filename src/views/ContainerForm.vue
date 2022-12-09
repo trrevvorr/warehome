@@ -1,6 +1,8 @@
 <template>
   <div class="header">
-    <h2>Containers</h2>
+    <n-h2>
+      <n-text type="primary"> Containers </n-text>
+    </n-h2>
     <span></span>
     <n-input v-model:value="query" placeholder="search containers" clearable>
       <template #prefix>
@@ -25,7 +27,7 @@ import { mapActions, mapGetters } from "vuex";
 import PutContainerForm from "../components/PutContainerForm.vue";
 import { Search12Regular, Add12Regular } from "@vicons/fluent";
 import { markRaw } from "vue";
-import { NModal, NIcon, NInput, NButton } from "naive-ui";
+import { NModal, NIcon, NInput, NButton, NH2, NText } from "naive-ui";
 import ContainerTable from "../components/ContainerTable.vue";
 
 export default {
@@ -36,6 +38,8 @@ export default {
     NIcon,
     NInput,
     NButton,
+    NH2,
+    NText,
     ContainerTable,
     Add12Regular,
   },
@@ -65,8 +69,10 @@ export default {
       return this.containers.filter((c) => c.name.toLowerCase().includes(this.query.toLowerCase()));
     },
     editContainer() {
-      return this.editContainerId ? this.containers.find((c) => c.id === this.editContainerId) : null;
-    }
+      return this.editContainerId
+        ? this.containers.find((c) => c.id === this.editContainerId)
+        : null;
+    },
   },
   methods: {
     ...mapActions(["addContainer", "deleteContainer"]),
