@@ -25,7 +25,7 @@
               </template>
               Cannot delete container with children or items
             </n-tooltip>
-            <n-button v-else type="error" @click="handleDeleteClick"> Delete </n-button>
+            <n-button v-else type="error" @click="handleConfirmDelete"> Delete </n-button>
           </span>
           <n-button @click="handleValidateClick" type="primary"> Save </n-button>
         </n-space>
@@ -41,6 +41,8 @@ import { ref, defineEmits, defineProps, computed } from "vue";
 import { NForm, NFormItem, NInput, NButton, NCard, NTooltip, NSpace } from "naive-ui";
 import ContainerSelect from "./ContainerSelect.vue";
 import { useStore } from "vuex";
+import { useDialog } from 'naive-ui'
+
 const store = useStore();
 const emit = defineEmits(["formSubmitted"]);
 
@@ -48,6 +50,7 @@ const props = defineProps({
   container: Object,
 });
 
+const dialog = useDialog();
 const formRef = ref(null);
 const formValue = ref({
   name: props.container?.name || "",
@@ -97,7 +100,21 @@ async function addNewContainer() {
   emit("formSubmitted");
 }
 
-async function handleDeleteClick() {
+function handleConfirmDelete() {
+  dialog.error({
+    title: "Confirm Delete",
+    content: `Are you sure you want to delete ${props.container.name}?`,
+    positiveText: "Delete",
+    negativeText: "Cancel",
+    onPositiveClick: () => {
+      handleDelete();
+    },
+    onNegativeClick: () => {
+    }
+  });
+}
+
+async function handleDelete() {
   await store.dispatch("deleteContainer", props.container.id);
   emit("formSubmitted");
 }

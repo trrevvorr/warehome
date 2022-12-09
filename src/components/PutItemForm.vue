@@ -19,7 +19,7 @@
       </n-form-item>
       <n-form-item>
         <n-space>
-          <n-button v-if="!isNew" type="error" @click="handleDeleteClick"> Delete </n-button>
+          <n-button v-if="!isNew" type="error" @click="handleConfirmDelete"> Delete </n-button>
           <n-button @click="handleValidateClick" type="primary"> Save </n-button>
         </n-space>
       </n-form-item>
@@ -34,6 +34,8 @@ import { ref, defineEmits, defineProps, computed } from "vue";
 import { NForm, NFormItem, NInput, NButton, NCard, NSpace } from "naive-ui";
 import ContainerSelect from "./ContainerSelect.vue";
 import { useStore } from "vuex";
+import { useDialog } from 'naive-ui'
+
 const store = useStore();
 const emit = defineEmits(["formSubmitted"]);
 
@@ -41,6 +43,7 @@ const props = defineProps({
   item: Object,
 });
 
+const dialog = useDialog()
 const formRef = ref(null);
 const formValue = ref({
   name: props.item?.name || "",
@@ -83,7 +86,21 @@ async function addNewItem() {
   emit("formSubmitted");
 }
 
-async function handleDeleteClick() {
+function handleConfirmDelete() {
+  dialog.error({
+    title: "Confirm Delete",
+    content: `Are you sure you want to delete ${props.item.name}?`,
+    positiveText: "Delete",
+    negativeText: "Cancel",
+    onPositiveClick: () => {
+      handleDelete();
+    },
+    onNegativeClick: () => {
+    }
+  });
+}
+
+async function handleDelete() {
   await store.dispatch("deleteItem", props.item.id);
   emit("formSubmitted");
 }
