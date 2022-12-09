@@ -7,8 +7,9 @@ import ItemView from '../views/ItemView.vue'
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: ItemForm
+    redirect: () => {
+      return '/items'
+    }
   },
   {
     path: '/items',

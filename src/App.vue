@@ -2,8 +2,14 @@
   <div id="app-header">
     <h1>{{location ? location.name : "Loading..."}}</h1>
     <div class="nav">
-      <router-link to="/containers">Containers</router-link> >
-      <router-link to="/items">Items</router-link>
+      <n-radio-group :value="$route.name" :on-update:value="val => $router.push({name: val})" name="routegroup">
+      <n-radio-button
+        v-for="route in routes"
+        :key="route.value"
+        :value="route.value"
+        :label="route.label"
+      />
+    </n-radio-group>
     </div>
   </div>
 
@@ -13,10 +19,23 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import { NRadioButton, NRadioGroup } from 'naive-ui';
 
 export default {
   name: 'App',
-  async created() {
+  components: {
+    NRadioButton,
+    NRadioGroup,
+  },
+  data() {
+    return {
+      routes: [
+        { label: 'Containers', value: 'containers' },
+        { label: 'Items', value: 'items' },
+      ],
+    };
+  },
+  created() {
     this.loadLocation('7a8aa9e5-b603-4b3e-8bcc-8f3c4154c24f');
   },
   computed: {
