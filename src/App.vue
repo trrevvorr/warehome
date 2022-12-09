@@ -2,7 +2,10 @@
   <n-config-provider :theme="darkTheme">
     <n-global-style />
     <n-loading-bar-provider>
-      <root-view />
+      <app-header />
+      <div id="root">
+        <root-view />
+      </div>
     </n-loading-bar-provider>
   </n-config-provider>
 </template>
@@ -14,6 +17,7 @@ import RootView from "./views/RootView.vue";
 import { mapActions, mapMutations } from "vuex";
 import { Location } from "./models";
 import { darkTheme } from "naive-ui";
+import AppHeader from "./components/AppHeader.vue";
 
 export default {
   name: "App",
@@ -22,6 +26,7 @@ export default {
     NConfigProvider,
     NGlobalStyle,
     RootView,
+    AppHeader,
   },
   data: () => ({
     listener: null,
@@ -69,17 +74,15 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
-  padding: 0 1rem;
   max-width: 40rem;
   margin: 0 auto;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+#root {
+  padding: 0 1rem;
+}
+
+.n-h {
   margin: 0;
 }
 
