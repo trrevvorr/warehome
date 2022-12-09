@@ -14,6 +14,7 @@
           placeholder="Container"
           :value="formValue.container"
           @selectOption="(val) => (formValue.container = val)"
+          :select-leaf-nodes-only="true"
         />
       </n-form-item>
       <n-form-item>

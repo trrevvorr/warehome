@@ -40,6 +40,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    selectLeafNodesOnly: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {};
@@ -62,11 +66,15 @@ export default {
   methods: {
     ...mapMutations(["updateLastSelectedContainerId"]),
     containersOptionsRecursive(containers) {
-      const options = containers.map((container) => ({
-        label: container.name,
-        key: container.id,
-        children: this.containersOptionsRecursive(container.children),
-      }));
+      const options = containers.map((container) => {
+        const children = this.containersOptionsRecursive(container.children);
+        return {
+          label: container.name,
+          key: container.id,
+          children: children,
+          disabled: this.selectLeafNodesOnly && container.children.length > 0,
+        };
+      });
 
       return options.length ? options : undefined;
     },
