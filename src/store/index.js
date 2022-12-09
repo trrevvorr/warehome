@@ -2,6 +2,13 @@ import { createStore } from "vuex";
 import { DataStore } from "@aws-amplify/datastore";
 import { Location, Container, Item } from "../models";
 
+const LOADING_STATE = Object.freeze({
+  LOADING: "loading",
+  SUCCESS: "success",
+  ERROR: "error",
+  NOT_BEGUN: "not_begun",
+});
+
 export default createStore({
   state: {
     locationId: null,
@@ -9,6 +16,7 @@ export default createStore({
     containers: [],
     items: [],
     lastSelectedContainerId: null,
+    loadingState: LOADING_STATE.NOT_BEGUN,
   },
   getters: {
     containers: (state) =>
@@ -29,6 +37,9 @@ export default createStore({
         .sort((a, b) => b._lastChangedAt - a._lastChangedAt),
     location: (state) => ({ name: state.locationName, id: state.locationId }),
     lastSelectedContainerId: (state) => state.lastSelectedContainerId,
+    isLoadingStateNotLoaded: (state) => state.loadingState === LOADING_STATE.LOADING || state.loadingState === LOADING_STATE.NOT_BEGUN,
+    isLoadingStateSuccess: (state) => state.loadingState === LOADING_STATE.SUCCESS,
+    isLoadingStateError: (state) => state.loadingState === LOADING_STATE.ERROR,
   },
   mutations: {
     updateLocation(state, location) {
@@ -44,6 +55,15 @@ export default createStore({
     updateLastSelectedContainerId(state, id) {
       state.lastSelectedContainerId = id;
     },
+    setLoadingStateLoading(state) {
+      state.loadingState = LOADING_STATE.LOADING;
+    },
+    setLoadingStateSuccess(state) {
+      state.loadingState = LOADING_STATE.SUCCESS;
+    },
+    setLoadingStateError(state) {
+      state.loadingState = LOADING_STATE.ERROR;
+    }
   },
   actions: {
     async loadLocation({ commit, dispatch }, id) {

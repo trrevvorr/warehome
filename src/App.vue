@@ -1,50 +1,59 @@
 <template>
-  <div id="app-header">
-    <h1>{{location ? location.name : "Loading..."}}</h1>
-    <div class="nav">
-      <n-radio-group :value="$route.name" :on-update:value="val => $router.push({name: val})" name="routegroup">
-      <n-radio-button
-        v-for="route in routes"
-        :key="route.value"
-        :value="route.value"
-        :label="route.label"
-      />
-    </n-radio-group>
-    </div>
-  </div>
-
-  <router-view />
-
+  <n-loading-bar-provider>
+    <root-view />
+  </n-loading-bar-provider>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
-import { NRadioButton, NRadioGroup } from 'naive-ui';
+import { DataStore, Hub } from "aws-amplify";
+import { NLoadingBarProvider } from "naive-ui";
+import RootView from "./views/RootView.vue";
+import { mapActions, mapMutations } from "vuex";
+import { Location } from "./models";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    NRadioButton,
-    NRadioGroup,
+    NLoadingBarProvider,
+    RootView,
   },
-  data() {
-    return {
-      routes: [
-        { label: 'Containers', value: 'containers' },
-        { label: 'Items', value: 'items' },
-      ],
-    };
-  },
+  data: () => ({
+    listener: null,
+  }),
   created() {
-    this.loadLocation('7a8aa9e5-b603-4b3e-8bcc-8f3c4154c24f');
-  },
-  computed: {
-    ...mapGetters(['location']),
+    this.setLoadingStateLoading();
+    DataStore.start();
+    
+    this.listener = Hub.listen("datastore", async (hubData) => {
+      const { event } = hubData.payload;
+      if (event === "ready") {
+        // all data models are synced from the cloud
+        DataStore.query(Location)
+          .then((locations) => {
+            if (locations.length === 0) {
+              throw new Error("No locations found");
+            }
+
+            this.loadLocation(locations[0].id).then(() => {
+              this.setLoadingStateSuccess();
+            });
+          })
+          .catch((err) => {
+            console.error(err);
+            this.setLoadingStateError();
+          });
+      }
+    });
   },
   methods: {
-    ...mapActions(['loadLocation']),
-  }
-}
+    ...mapActions(["loadLocation"]),
+    ...mapMutations(["setLoadingStateLoading", "setLoadingStateError", "setLoadingStateSuccess"]),
+  },
+  unmounted() {
+    // Remove listener
+    this.listener();
+  },
+};
 </script>
 
 <style>
@@ -58,16 +67,12 @@ export default {
   margin: 0 auto;
 }
 
-#app-header {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 1rem;
-  align-items: center;
-  margin-bottom: 2rem;
-  margin-top: 1rem;
-}
-
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   margin: 0;
 }
 
