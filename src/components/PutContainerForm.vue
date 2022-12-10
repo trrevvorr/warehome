@@ -19,7 +19,12 @@
       <n-form-item>
         <n-space>
           <span v-if="!isNew">
-            <n-tooltip v-if="(container.children.length > 0) || (items && items.length > 0)">
+            <n-tooltip
+              v-if="
+                store.getters.getChildrenForContainer(container).length > 0 ||
+                (items && items.length > 0)
+              "
+            >
               <template #trigger>
                 <n-button disabled type="error" tag="div"> Delete </n-button>
               </template>
@@ -41,7 +46,7 @@ import { ref, defineEmits, defineProps, computed } from "vue";
 import { NForm, NFormItem, NInput, NButton, NCard, NTooltip, NSpace } from "naive-ui";
 import ContainerSelect from "./ContainerSelect.vue";
 import { useStore } from "vuex";
-import { useDialog } from 'naive-ui'
+import { useDialog } from "naive-ui";
 
 const store = useStore();
 const emit = defineEmits(["formSubmitted"]);
@@ -57,7 +62,9 @@ const formValue = ref({
   parent: props.container?.parentContainerID || "",
 });
 const isNew = computed(() => !props.container);
-const items = ref(props.container && store.getters.items.filter((item) => item.containerID === props.container.id));
+const items = ref(
+  props.container && store.getters.items.filter((item) => item.containerID === props.container.id)
+);
 const rules = ref({
   name: {
     required: true,
@@ -109,8 +116,7 @@ function handleConfirmDelete() {
     onPositiveClick: () => {
       handleDelete();
     },
-    onNegativeClick: () => {
-    }
+    onNegativeClick: () => {},
   });
 }
 

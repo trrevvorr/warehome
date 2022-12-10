@@ -49,17 +49,22 @@ export default {
     return {};
   },
   computed: {
-    ...mapGetters(["containers", "lastSelectedContainerId"]),
+    ...mapGetters([
+      "containers",
+      "lastSelectedContainerId",
+      "getChildrenForContainer",
+      "getAncestorsForContainer",
+    ]),
     options() {
       const rootContainers = this.containers.filter((c) => c.parentContainerID === null);
-      return this.containersOptionsRecursive(rootContainers);
+      return this.containersOptionsRecursive(rootContainers) || [];
     },
     defaultExpandedKeys() {
       const selectedContainer = this.value
         ? this.containers.find((c) => c.id === this.value)
         : null;
       return selectedContainer
-        ? selectedContainer.ancestors.containers.map((ancestor) => ancestor.id)
+        ? this.getAncestorsForContainer(selectedContainer).map((ancestor) => ancestor.id)
         : [];
     },
   },
@@ -67,12 +72,12 @@ export default {
     ...mapMutations(["updateLastSelectedContainerId"]),
     containersOptionsRecursive(containers) {
       const options = containers.map((container) => {
-        const children = this.containersOptionsRecursive(container.children);
+        const children = this.containersOptionsRecursive(this.getChildrenForContainer(container));
         return {
           label: container.name,
           key: container.id,
           children: children,
-          disabled: this.selectLeafNodesOnly && container.children.length > 0,
+          disabled: this.selectLeafNodesOnly && children && children.length > 0,
         };
       });
 

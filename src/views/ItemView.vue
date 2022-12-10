@@ -8,9 +8,9 @@
       <n-button type="error" @click="deleteItem(item.id)"> Delete </n-button>
     </div>
 
-      <div class="label">Container</div>
-      <ContainerLink v-if="item.container" :container="item.container" />
-      <div v-else class="subtitle">None</div>
+    <div class="label">Container</div>
+    <ContainerLink v-if="getContainerForItem(item)" :container="getContainerForItem(item)" />
+    <div v-else class="subtitle">None</div>
   </div>
   <n-alert v-else title="Not Found" type="info">
     Item does not exist. <router-link to="/items">View all items</router-link>
@@ -20,8 +20,7 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import ContainerLink from "../components/ContainerLink.vue";
-import { NButton, NAlert } from 'naive-ui';
-
+import { NButton, NAlert } from "naive-ui";
 
 export default {
   name: "ItemView",

@@ -14,8 +14,8 @@ export default {
   props: {
     query: {
       type: String,
-      default: ''
-    }
+      default: "",
+    },
   },
   data() {
     return {
@@ -23,17 +23,22 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["items"]),
+    ...mapGetters(["items", "getAncestorStringForContainer", "getContainerForItem"]),
     itemsData() {
       return this.items
         .filter((item) => item.name.toLowerCase().includes(this.query.toLowerCase()))
-        .map((item) => ({
-          name: item.name,
-          container: item.container
-            ? item.container.ancestors.asString + item.container.name
-            : undefined,
-          id: item.id,
-        }));
+        .map((item) => {
+          const container = this.getContainerForItem(item);
+          return {
+            name: item.name,
+            container: container
+              ? [this.getAncestorStringForContainer(container), container.name]
+                  .filter((c) => c)
+                  .join(" / ")
+              : undefined,
+            id: item.id,
+          };
+        });
     },
   },
   methods: {
@@ -42,12 +47,12 @@ export default {
         {
           title: "Name",
           key: "name",
-          sorter: 'default'
+          sorter: "default",
         },
         {
           title: "Container",
           key: "container",
-          sorter: 'default'
+          sorter: "default",
         },
         {
           title: "",

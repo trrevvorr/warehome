@@ -1,13 +1,17 @@
 <template>
-    <span class="container-link">
-      <span v-if="displayAncestors" class="ancestors">
-        <span>{{container.ancestors.asString}}</span>
-      </span>
-      <router-link class="container-name" :to="('/containers/' + container.id)">{{(container.name || container.id)}}</router-link>
+  <span class="container-link">
+    <span v-if="displayAncestors" class="ancestors">
+      <span>{{ getAncestorStringForContainer(container) }}</span>
     </span>
+    <router-link class="container-name" :to="'/containers/' + container.id">{{
+      container.name || container.id
+    }}</router-link>
+  </span>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   name: "ContainerLink",
   props: {
@@ -19,7 +23,10 @@ export default {
       type: Boolean,
       default: true,
     },
-  }
+  },
+  computed: {
+    ...mapGetters(["getAncestorStringForContainer"]),
+  },
 };
 </script>
 

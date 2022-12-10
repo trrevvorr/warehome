@@ -21,23 +21,19 @@ export default createStore({
     loadingState: LOADING_STATE.NOT_BEGUN,
   },
   getters: {
-    containers: (state) =>
-      state.containers
-        .map((container) => completeContainer(container, state))
-        .sort((a, b) =>
-          (a.ancestors.asString + a.name).localeCompare(b.ancestors.asString + b.name)
-        ),
-    items: (state) =>
-      state.items
-        .map((item) => ({
-          ...item,
-          container: completeContainer(
-            state.containers.find((container) => container.id === item.containerID),
-            state
-          ),
-        }))
-        .sort((a, b) => b._lastChangedAt - a._lastChangedAt),
+    containers: (state) => state.containers,
+    items: (state) => state.items,
     location: (state) => state.location,
+    getChildrenForContainer: (state) => (container) =>
+      state.containers.filter((c) => c.parentContainerID === container.id),
+    getAncestorsForContainer: (state) => (container) =>
+      getContainerAncestorsRecursive(container, state.containers),
+    getAncestorStringForContainer: (state) => (container) =>
+      getContainerAncestorsRecursive(container, state.containers)
+        .map((c) => c.name)
+        .join(" / "),
+    getContainerForItem: (state) => (item) =>
+      state.containers.find((c) => c.id === item.containerID),
     lastSelectedContainerId: (state) => state.lastSelectedContainerId,
     isLoadingStateNotLoaded: (state) =>
       state.loadingState === LOADING_STATE.LOADING ||
@@ -50,10 +46,10 @@ export default createStore({
       state.location = location;
     },
     updateContainers(state, containers) {
-      state.containers = containers;
+      state.containers = containers.sort((a, b) => a.name.localeCompare(b.name));
     },
     updateItems(state, items) {
-      state.items = items;
+      state.items = items.sort((a, b) => b._lastChangedAt - a._lastChangedAt);
     },
     updateLastSelectedContainerId(state, id) {
       state.lastSelectedContainerId = id;
@@ -78,6 +74,9 @@ export default createStore({
         state.locationSubscription.unsubscribe();
       }
       state.locationSubscription = DataStore.observe(Location, id).subscribe((msg) => {
+        console.debug(
+          `Location subscription ${msg.opType}: ${msg.element.name} - ${msg.element.id}`
+        );
         if (msg.opType === "UPDATE") {
           commit("updateLocation", msg.element);
         } else {
@@ -101,9 +100,15 @@ export default createStore({
       state.containerSubscription = DataStore.observe(Container, (c) =>
         c.locationID.eq(state.location.id)
       ).subscribe((msg) => {
+        console.debug(
+          `Container subscription ${msg.opType}: ${msg.element.name} - ${msg.element.id}`
+        );
         switch (msg.opType) {
           case "INSERT":
-            commit("updateContainers", [...state.containers, msg.element]);
+            commit("updateContainers", [
+              ...state.containers.filter((c) => c.id !== msg.element.id),
+              msg.element,
+            ]);
             break;
           case "UPDATE":
             commit("updateContainers", [
@@ -126,9 +131,7 @@ export default createStore({
         throw new Error("Location not loaded");
       }
 
-      const items = await DataStore.query(Item, (c) =>
-        c.locationID.eq(state.location.id)
-      );
+      const items = await DataStore.query(Item, (c) => c.locationID.eq(state.location.id));
       commit("updateItems", items);
 
       if (state.itemSubscription) {
@@ -137,9 +140,13 @@ export default createStore({
       state.itemSubscription = DataStore.observe(Item, (c) =>
         c.locationID.eq(state.location.id)
       ).subscribe((msg) => {
+        console.debug(`Item subscription ${msg.opType}: ${msg.element.name} - ${msg.element.id}`);
         switch (msg.opType) {
           case "INSERT":
-            commit("updateItems", [...state.items, msg.element]);
+            commit("updateItems", [
+              ...state.items.filter((c) => c.id !== msg.element.id),
+              msg.element,
+            ]);
             break;
           case "UPDATE":
             commit("updateItems", [
@@ -148,9 +155,7 @@ export default createStore({
             ]);
             break;
           case "DELETE":
-            commit("updateItems", [
-              ...state.items.filter((c) => c.id !== msg.element.id),
-            ]);
+            commit("updateItems", [...state.items.filter((c) => c.id !== msg.element.id)]);
             break;
           default:
             console.warn("Unexpected operation type on item: " + msg.opType);
@@ -179,81 +184,54 @@ export default createStore({
       });
     },
     async updateContainer({ commit, state }, input) {
-      const originalC = await DataStore.query(Container, input.id);
-      const newC = Container.copyOf(originalC, (updated) => {
-        updated.name = input.name;
-        updated.parentContainerID = input.parentContainerId || undefined;
-      });
-      await DataStore.save(newC).then(() => {
-        commit("updateContainers", [...state.containers.filter((c) => c.id !== input.id), newC]);
+      await DataStore.query(Container, input.id).then(async (originalContainer) => {
+        const newContainer = Container.copyOf(originalContainer, (updated) => {
+          updated.name = input.name;
+          updated.parentContainerID = input.parentContainerId || undefined;
+        });
+        await DataStore.save(newContainer).then(() => {
+          commit("updateContainers", [
+            ...state.containers.filter((c) => c.id !== input.id),
+            newContainer,
+          ]);
+        });
       });
     },
     async updateItem({ commit, state }, input) {
-      const originalI = await DataStore.query(Item, input.id);
-      const newI = Item.copyOf(originalI, (updated) => {
-        updated.name = input.name;
-        updated.containerID = input.containerId || undefined;
-      });
-      await DataStore.save(newI).then(() => {
-        commit("updateItems", [...state.items.filter((i) => i.id !== input.id), newI]);
+      await DataStore.query(Item, input.id).then(async (originalItem) => {
+        const newItem = Item.copyOf(originalItem, (updated) => {
+          updated.name = input.name;
+          updated.containerID = input.containerId || undefined;
+        });
+        await DataStore.save(newItem).then(() => {
+          commit("updateItems", [...state.items.filter((i) => i.id !== input.id), newItem]);
+        });
       });
     },
     async deleteContainer({ commit, state }, id) {
-      await DataStore.delete(await DataStore.query(Container, id));
-      commit(
-        "updateContainers",
-        state.containers.filter((container) => container.id !== id)
+      await DataStore.delete(await DataStore.query(Container, id)).then(
+        commit(
+          "updateContainers",
+          state.containers.filter((container) => container.id !== id)
+        )
       );
     },
     async deleteItem({ commit, state }, id) {
-      await DataStore.delete(await DataStore.query(Item, id));
-      commit(
-        "updateItems",
-        state.items.filter((item) => item.id !== id)
+      await DataStore.delete(await DataStore.query(Item, id)).then(
+        commit(
+          "updateItems",
+          state.items.filter((item) => item.id !== id)
+        )
       );
     },
   },
   modules: {},
 });
 
-function completeContainer(container, state) {
-  return container
-    ? {
-        ...container,
-        children: getContainerChildren(container, state.containers),
-        ancestors: getContainerAncestors(container, state.containers),
-      }
-    : null;
-}
-
-function getContainerChildren(root, containers) {
-  return containers
-    .filter((container) => container.parentContainerID === root.id)
-    .map((container) => ({
-      ...container,
-      children: getContainerChildren(container, containers),
-    }))
-    .sort((a, b) => a.name.localeCompare(b.name));
-}
-
-function getContainerAncestors(leaf, containers) {
-  const ancestors = [];
-  let container = leaf;
-
-  while (container) {
-    container = containers.find((c) => c.id === container.parentContainerID);
-    if (container) {
-      ancestors.push(container);
-    }
+function getContainerAncestorsRecursive(container, containers) {
+  if (!container.parentContainerID) {
+    return [];
   }
-
-  ancestors.reverse();
-  return {
-    containers: ancestors,
-    asString: containerAncestorString(ancestors),
-  };
-}
-
-function containerAncestorString(ancestors) {
-  return ancestors.reduce((acc, curr) => acc + curr.name + " / ", "");
+  const parent = containers.find((c) => c.id === container.parentContainerID);
+  return [...getContainerAncestorsRecursive(parent, containers), parent];
 }

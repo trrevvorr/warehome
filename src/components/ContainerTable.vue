@@ -29,7 +29,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["containers", "items"]),
+    ...mapGetters(["containers", "items", "getChildrenForContainer"]),
     containersData() {
       return this.containers
         .filter((c) => !c.parentContainerID)
@@ -39,20 +39,22 @@ export default {
   },
   methods: {
     containerDataRecursive(container) {
-      const children = container.children
-        .map((c) => this.containerDataRecursive(c))
-        .filter((c) => c);
-      const matchesQuery =
-        children.length || container.name.toLowerCase().includes(this.query.toLowerCase());
-      return matchesQuery
-        ? {
-            name: container.name,
-            id: container.id,
-            key: container.id,
-            items: this.items.filter((i) => i.containerID === container.id).length,
-            children: children,
-          }
-        : null;
+      const searchMatches = container.name.toLowerCase().includes(this.query.toLowerCase());
+      if (searchMatches) {
+        const children = this.getChildrenForContainer(container)
+          .map((c) => this.containerDataRecursive(c))
+          .filter((c) => c);
+
+        return {
+          name: container.name,
+          id: container.id,
+          key: container.id,
+          items: this.items.filter((i) => i.containerID === container.id).length,
+          children: children,
+        };
+      }
+
+      return null;
     },
     createColumns(editAction) {
       return [

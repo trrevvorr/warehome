@@ -5,7 +5,9 @@
         <h2>{{ container.name }}</h2>
         <span class="subtitle">Container</span>
       </span>
-      <n-tooltip v-if="(container.children.length > 0 || (items && items.length > 0))">
+      <n-tooltip
+        v-if="getChildrenForContainer(container).length > 0 || (items && items.length > 0)"
+      >
         <template #trigger>
           <n-button disabled type="error" tag="div"> Delete </n-button>
         </template>
@@ -19,8 +21,8 @@
     <div v-else class="subtitle">None</div>
 
     <div class="label">Child Containers</div>
-    <ul v-if="container.children && container.children.length">
-      <li v-for="child in container.children" :key="child.id">
+    <ul v-if="getChildrenForContainer(container).length">
+      <li v-for="child in getChildrenForContainer(container)" :key="child.id">
         <ContainerLink :container="child" :displayAncestors="false" />
       </li>
     </ul>
