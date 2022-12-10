@@ -2,7 +2,7 @@
   <n-config-provider :theme="darkTheme">
     <n-global-style />
     <n-dialog-provider>
-      <n-message-provider>
+      <n-message-provider placement="bottom">
         <n-loading-bar-provider>
           <div id="wrapper">
             <app-header />
