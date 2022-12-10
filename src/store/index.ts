@@ -53,6 +53,33 @@ export default createStore({
       [LOADING_STATE.LOADING, LOADING_STATE.NOT_BEGUN].includes(state.loadingState),
     isLoadingStateSuccess: (state) => state.loadingState === LOADING_STATE.SUCCESS,
     isLoadingStateError: (state) => state.loadingState === LOADING_STATE.ERROR,
+    getRecentContainers:
+      (state) =>
+      (limit: number, exceptId: string): Container[] => {
+        const containers = state.containers.map((c: Container) => ({
+          containerId: c.id,
+          updatedAt: c.updatedAt,
+        }));
+        const items = state.items.map((i: Item) => ({
+          containerId: i.containerID,
+          updatedAt: i.updatedAt,
+        }));
+
+        return [
+          ...new Set(
+            [...containers, ...items]
+              .sort((a, b) =>
+                a.updatedAt && b.updatedAt ? a.updatedAt.localeCompare(b.updatedAt) : 0
+              )
+              .map((c) => c.containerId)
+              .reverse()
+          ),
+        ]
+          .filter((id) => id !== exceptId)
+          .slice(0, limit)
+          .map((id) => state.containers.find((c) => c.id === id))
+          .filter((c) => c) as Container[];
+      },
   },
   mutations: {
     updateLocation(state, location) {
