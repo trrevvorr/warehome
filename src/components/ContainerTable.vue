@@ -10,10 +10,11 @@
 
 <script lang="ts">
 import { mapGetters } from "vuex";
-import { NDataTable, NButton, DataTableColumns } from "naive-ui";
+import { NDataTable, NButton, DataTableColumns, NIcon } from "naive-ui";
 import { defineComponent, h } from "vue";
 import { Container, Item } from "@/models";
 import { RowData } from "naive-ui/es/data-table/src/interface";
+import { Edit16Regular } from "@vicons/fluent";
 
 export default defineComponent({
   name: "ContainerTable",
@@ -76,12 +77,10 @@ export default defineComponent({
             return h(
               NButton,
               {
-                strong: true,
-                tertiary: true,
-                size: "small",
+                quaternary: true,
                 onClick: () => editAction(row.id),
               },
-              { default: () => "Edit" }
+              { icon: () => h(NIcon, {}, { default: () => h(Edit16Regular) }) }
             );
           },
         },
