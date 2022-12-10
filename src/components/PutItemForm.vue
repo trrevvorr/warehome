@@ -14,7 +14,6 @@
           placeholder="Container"
           :value="formValue.container"
           @selectOption="(val) => (formValue.container = val)"
-          :select-leaf-nodes-only="true"
         />
       </n-form-item>
       <n-form-item>
@@ -34,7 +33,7 @@ import { ref, defineEmits, defineProps, computed } from "vue";
 import { NForm, NFormItem, NInput, NButton, NCard, NSpace } from "naive-ui";
 import ContainerSelect from "./ContainerSelect.vue";
 import { useStore } from "vuex";
-import { useDialog } from 'naive-ui'
+import { useDialog } from "naive-ui";
 
 const store = useStore();
 const emit = defineEmits(["formSubmitted"]);
@@ -43,7 +42,7 @@ const props = defineProps({
   item: Object,
 });
 
-const dialog = useDialog()
+const dialog = useDialog();
 const formRef = ref(null);
 const formValue = ref({
   name: props.item?.name || "",
@@ -95,8 +94,7 @@ function handleConfirmDelete() {
     onPositiveClick: () => {
       handleDelete();
     },
-    onNegativeClick: () => {
-    }
+    onNegativeClick: () => {},
   });
 }
 

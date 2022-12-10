@@ -3,9 +3,11 @@
     <n-global-style />
     <n-dialog-provider>
       <n-loading-bar-provider>
-        <app-header />
-        <div id="root">
-          <root-view />
+        <div id="wrapper">
+          <app-header />
+          <div id="root">
+            <root-view />
+          </div>
         </div>
       </n-loading-bar-provider>
     </n-dialog-provider>
@@ -78,12 +80,21 @@ export default defineComponent({
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
-  max-width: 40rem;
   margin: 0 auto;
 }
 
+#wrapper {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100vh;
+}
+
 #root {
+  max-width: 40rem;
   padding: 0 1rem;
+  margin: 0 auto;
+  overflow-y: scroll;
+  padding-top: 1rem;
 }
 
 .n-h {

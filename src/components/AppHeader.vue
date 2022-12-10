@@ -75,11 +75,7 @@ export default defineComponent({
 
 <style>
 #app-header {
-  position: sticky;
-  top: 0;
-  background-color: rgb(16, 16, 20);
   padding: 0.5rem;
-  margin-bottom: 1rem;
   z-index: 999;
   border-bottom: 1px solid rgba(255, 255, 255, 0.24);
 }

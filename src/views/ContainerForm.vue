@@ -9,15 +9,21 @@
         <n-icon :component="Search12Regular" />
       </template>
     </n-input>
-    <n-button @click="showModal = true">
-      <template #icon>
-        <n-icon><Add12Regular /></n-icon>
-      </template>
-    </n-button>
-    <n-modal v-model:show="showModal" class="modal">
-      <put-container-form @formSubmitted="showModal = false" :container="editContainer" />
-    </n-modal>
   </div>
+  <n-button
+    @click="showModal = true"
+    class="new-container-button"
+    circle
+    type="primary"
+    size="large"
+  >
+    <template #icon>
+      <n-icon><Add16Filled /></n-icon>
+    </template>
+  </n-button>
+  <n-modal v-model:show="showModal" class="modal">
+    <put-container-form @formSubmitted="showModal = false" :container="editContainer" />
+  </n-modal>
 
   <container-table :query="query" @editContainer="(id) => (editContainerId = id)" />
 </template>
@@ -25,7 +31,7 @@
 <script lang="ts">
 import { mapActions, mapGetters } from "vuex";
 import PutContainerForm from "../components/PutContainerForm.vue";
-import { Search12Regular, Add12Regular } from "@vicons/fluent";
+import { Search12Regular, Add16Filled } from "@vicons/fluent";
 import { defineComponent, markRaw } from "vue";
 import { NModal, NIcon, NInput, NButton, NH2, NText } from "naive-ui";
 import ContainerTable from "../components/ContainerTable.vue";
@@ -42,7 +48,7 @@ export default defineComponent({
     NH2,
     NText,
     ContainerTable,
-    Add12Regular,
+    Add16Filled,
   },
   data() {
     return {
@@ -91,9 +97,17 @@ export default defineComponent({
 .header {
   line-height: 1rem;
   display: grid;
-  grid-template-columns: auto 1fr auto auto;
+  grid-template-columns: auto 1fr auto;
   grid-gap: 1rem;
   margin-bottom: 1rem;
   align-items: center;
+}
+
+.new-container-button {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 999;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
 </style>
