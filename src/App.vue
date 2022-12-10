@@ -2,21 +2,29 @@
   <n-config-provider :theme="darkTheme">
     <n-global-style />
     <n-dialog-provider>
-      <n-loading-bar-provider>
-        <div id="wrapper">
-          <app-header />
-          <div id="root">
-            <root-view />
+      <n-message-provider>
+        <n-loading-bar-provider>
+          <div id="wrapper">
+            <app-header />
+            <div id="root">
+              <root-view />
+            </div>
           </div>
-        </div>
-      </n-loading-bar-provider>
+        </n-loading-bar-provider>
+      </n-message-provider>
     </n-dialog-provider>
   </n-config-provider>
 </template>
 
 <script lang="ts">
 import { DataStore, Hub } from "aws-amplify";
-import { NLoadingBarProvider, NConfigProvider, NDialogProvider, NGlobalStyle } from "naive-ui";
+import {
+  NLoadingBarProvider,
+  NConfigProvider,
+  NDialogProvider,
+  NMessageProvider,
+  NGlobalStyle,
+} from "naive-ui";
 import RootView from "./views/RootView.vue";
 import { mapActions, mapMutations } from "vuex";
 import { Location } from "./models";
@@ -30,6 +38,7 @@ export default defineComponent({
     NLoadingBarProvider,
     NConfigProvider,
     NDialogProvider,
+    NMessageProvider,
     NGlobalStyle,
     RootView,
     AppHeader,

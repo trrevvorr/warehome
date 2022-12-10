@@ -5,6 +5,7 @@ import awsconfig from "@/aws-exports";
 import store from "@/store";
 import router from "@/router";
 import { Container, Item, Location } from "@/models";
+import './registerServiceWorker'
 
 // TODO: Get the location ID from the user
 const locationId = "7a8aa9e5-b603-4b3e-8bcc-8f3c4154c24f";
