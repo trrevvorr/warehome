@@ -1,6 +1,11 @@
 <template>
   <div id="app-header">
     <n-page-header>
+      <template #avatar>
+        <n-icon size="30" color="#63e2b7">
+          <BoxMultipleSearch24Regular />
+        </n-icon>
+      </template>
       <template #title>
         {{ isLoadingStateSuccess ? location.name : "Loading..." }}
       </template>
@@ -12,18 +17,26 @@
             </template>
           </n-button>
           <div class="nav">
-            <n-radio-group
-              :value="$route.name?.toString() || 'items'"
-              :on-update:value="(val) => $router.push({ name: val })"
-              name="route-group"
-            >
-              <n-radio-button
-                v-for="route in routes"
-                :key="route.value"
-                :value="route.value"
-                :label="route.label"
-              />
-            </n-radio-group>
+            <n-button-group>
+              <n-button
+                strong
+                @click="$router.push({ name: 'containers' })"
+                :type="$route.name?.toString() === 'containers' ? 'primary' : 'tertiary'"
+              >
+                <template #icon>
+                  <n-icon><BoxMultiple24Regular /></n-icon>
+                </template>
+              </n-button>
+              <n-button
+                strong
+                @click="$router.push({ name: 'items' })"
+                :type="$route.name?.toString() === 'items' ? 'primary' : 'tertiary'"
+              >
+                <template #icon>
+                  <n-icon><Shapes24Regular /></n-icon>
+                </template>
+              </n-button>
+            </n-button-group>
           </div>
         </n-space>
       </template>
@@ -33,28 +46,31 @@
 
 <script lang="ts">
 import { mapGetters, mapMutations } from "vuex";
-import { NRadioButton, NRadioGroup, NButton, NIcon, NSpace, NPageHeader } from "naive-ui";
+import { NButton, NIcon, NSpace, NPageHeader, NButtonGroup } from "naive-ui";
 import { DataStore } from "@aws-amplify/datastore";
-import { ArrowClockwise12Regular } from "@vicons/fluent";
+import {
+  ArrowClockwise12Regular,
+  BoxMultipleSearch24Regular,
+  BoxMultiple24Regular,
+  Shapes24Regular,
+} from "@vicons/fluent";
 import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "RootView",
   components: {
-    NRadioButton,
-    NRadioGroup,
     NButton,
     NIcon,
     NSpace,
     NPageHeader,
+    NButtonGroup,
     ArrowClockwise12Regular,
+    BoxMultipleSearch24Regular,
+    BoxMultiple24Regular,
+    Shapes24Regular,
   },
   data() {
     return {
-      routes: [
-        { label: "Containers", value: "containers" },
-        { label: "Items", value: "items" },
-      ],
       loadingBar: () => {},
     };
   },
