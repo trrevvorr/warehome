@@ -11,10 +11,12 @@ const LOADING_STATE = Object.freeze({
 
 export default createStore({
   state: {
-    locationId: null,
-    locationName: "",
+    location: null,
+    locationSubscription: null,
     containers: [],
+    containerSubscription: null,
     items: [],
+    itemSubscription: null,
     lastSelectedContainerId: null,
     loadingState: LOADING_STATE.NOT_BEGUN,
   },
@@ -35,16 +37,17 @@ export default createStore({
           ),
         }))
         .sort((a, b) => b._lastChangedAt - a._lastChangedAt),
-    location: (state) => ({ name: state.locationName, id: state.locationId }),
+    location: (state) => state.location,
     lastSelectedContainerId: (state) => state.lastSelectedContainerId,
-    isLoadingStateNotLoaded: (state) => state.loadingState === LOADING_STATE.LOADING || state.loadingState === LOADING_STATE.NOT_BEGUN,
+    isLoadingStateNotLoaded: (state) =>
+      state.loadingState === LOADING_STATE.LOADING ||
+      state.loadingState === LOADING_STATE.NOT_BEGUN,
     isLoadingStateSuccess: (state) => state.loadingState === LOADING_STATE.SUCCESS,
     isLoadingStateError: (state) => state.loadingState === LOADING_STATE.ERROR,
   },
   mutations: {
     updateLocation(state, location) {
-      state.locationId = location.id;
-      state.locationName = location.name;
+      state.location = location;
     },
     updateContainers(state, containers) {
       state.containers = containers;
@@ -63,28 +66,101 @@ export default createStore({
     },
     setLoadingStateError(state) {
       state.loadingState = LOADING_STATE.ERROR;
-    }
+    },
   },
   actions: {
-    async loadLocation({ commit, dispatch }, id) {
+    async loadLocation({ commit, dispatch, state }, id) {
       const location = await DataStore.query(Location, id);
       commit("updateLocation", location);
-      await dispatch("loadContainers").then(() => dispatch("loadItems"));
+      await dispatch("syncContainers").then(() => dispatch("syncItems"));
+
+      if (state.locationSubscription) {
+        state.locationSubscription.unsubscribe();
+      }
+      state.locationSubscription = DataStore.observe(Location, id).subscribe((msg) => {
+        if (msg.opType === "UPDATE") {
+          commit("updateLocation", msg.element);
+        } else {
+          console.warn("Unexpected operation type on location: " + msg.opType);
+        }
+      });
     },
-    async loadContainers({ commit, state }) {
-      const location = await DataStore.query(Location, state.locationId);
-      const containers = await location.Containers.toArray();
+    async syncContainers({ commit, state }) {
+      if (!state.location) {
+        throw new Error("Location not loaded");
+      }
+
+      const containers = await DataStore.query(Container, (c) =>
+        c.locationID.eq(state.location.id)
+      );
       commit("updateContainers", containers);
+
+      if (state.containerSubscription) {
+        state.containerSubscription.unsubscribe();
+      }
+      state.containerSubscription = DataStore.observe(Container, (c) =>
+        c.locationID.eq(state.location.id)
+      ).subscribe((msg) => {
+        switch (msg.opType) {
+          case "INSERT":
+            commit("updateContainers", [...state.containers, msg.element]);
+            break;
+          case "UPDATE":
+            commit("updateContainers", [
+              ...state.containers.filter((c) => c.id !== msg.element.id),
+              msg.element,
+            ]);
+            break;
+          case "DELETE":
+            commit("updateContainers", [
+              ...state.containers.filter((c) => c.id !== msg.element.id),
+            ]);
+            break;
+          default:
+            console.warn("Unexpected operation type on container: " + msg.opType);
+        }
+      });
     },
-    async loadItems({ commit, state }) {
-      const location = await DataStore.query(Location, state.locationId);
-      const items = await location.Items.toArray();
+    async syncItems({ commit, state }) {
+      if (!state.location) {
+        throw new Error("Location not loaded");
+      }
+
+      const items = await DataStore.query(Item, (c) =>
+        c.locationID.eq(state.location.id)
+      );
       commit("updateItems", items);
+
+      if (state.itemSubscription) {
+        state.itemSubscription.unsubscribe();
+      }
+      state.itemSubscription = DataStore.observe(Item, (c) =>
+        c.locationID.eq(state.location.id)
+      ).subscribe((msg) => {
+        switch (msg.opType) {
+          case "INSERT":
+            commit("updateItems", [...state.items, msg.element]);
+            break;
+          case "UPDATE":
+            commit("updateItems", [
+              ...state.items.filter((c) => c.id !== msg.element.id),
+              msg.element,
+            ]);
+            break;
+          case "DELETE":
+            commit("updateItems", [
+              ...state.items.filter((c) => c.id !== msg.element.id),
+            ]);
+            break;
+          default:
+            console.warn("Unexpected operation type on item: " + msg.opType);
+        }
+      });
     },
     async addContainer({ commit, state }, input) {
       const container = new Container({
         name: input.name,
-        locationID: state.locationId,
+        locationID: state.location.id,
         parentContainerID: input.parentContainerId || undefined,
       });
 
@@ -95,7 +171,7 @@ export default createStore({
     async addItem({ commit, state }, input) {
       const item = new Item({
         name: input.name,
-        locationID: state.locationId,
+        locationID: state.location.id,
         containerID: input.containerId || undefined,
       });
       await DataStore.save(item).then(() => {
