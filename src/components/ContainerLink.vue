@@ -9,10 +9,11 @@
   </span>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from "vue";
 import { mapGetters } from "vuex";
 
-export default {
+export default defineComponent({
   name: "ContainerLink",
   props: {
     container: {
@@ -27,7 +28,7 @@ export default {
   computed: {
     ...mapGetters(["getAncestorStringForContainer"]),
   },
-};
+});
 </script>
 
 <style scoped>

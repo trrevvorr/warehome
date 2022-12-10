@@ -41,14 +41,15 @@
   </n-alert>
 </template>
 
-<script>
+<script lang="ts">
 import { mapGetters, mapActions } from "vuex";
 import { DataStore } from "@aws-amplify/datastore";
-import { Container } from "../models";
-import ContainerLink from "../components/ContainerLink.vue";
+import { Container, Item } from "@/models";
+import ContainerLink from "@/components/ContainerLink.vue";
 import { NButton, NTooltip, NAlert } from "naive-ui";
+import { defineComponent } from "vue";
 
-export default {
+export default defineComponent({
   name: "ContainerView",
   components: { ContainerLink, NButton, NTooltip, NAlert },
   props: {
@@ -59,18 +60,18 @@ export default {
   },
   data() {
     return {
-      items: [],
+      items: [] as Item[],
     };
   },
   computed: {
-    ...mapGetters(["containers"]),
+    ...mapGetters(["containers", "getChildrenForContainer"]),
     container() {
-      return this.containers.find((c) => c.id === this.containerId);
+      return this.containers.find((c: Container) => c.id === this.containerId);
     },
     parentContainer() {
       return (
         this.container.parentContainerID &&
-        this.containers.find((c) => c.id === this.container.parentContainerID)
+        this.containers.find((c: Container) => c.id === this.container.parentContainerID)
       );
     },
   },
@@ -86,10 +87,10 @@ export default {
     ...mapActions(["deleteContainer"]),
     async updateItems() {
       const container = await DataStore.query(Container, this.containerId);
-      this.items = await container.Items.toArray();
+      this.items = container ? await container.Items.toArray() : [];
     },
   },
-};
+});
 </script>
 
 <style scoped>

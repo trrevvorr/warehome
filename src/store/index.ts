@@ -1,43 +1,56 @@
 import { createStore } from "vuex";
 import { DataStore } from "@aws-amplify/datastore";
 import { Location, Container, Item } from "../models";
+import { ZenObservable } from "zen-observable-ts/lib/types";
 
-const LOADING_STATE = Object.freeze({
-  LOADING: "loading",
-  SUCCESS: "success",
-  ERROR: "error",
-  NOT_BEGUN: "not_begun",
-});
+enum LOADING_STATE {
+  LOADING = "loading",
+  SUCCESS = "success",
+  ERROR = "error",
+  NOT_BEGUN = "not_begun",
+}
+
+interface State {
+  location: Location | null;
+  locationSubscription: ZenObservable.Subscription | null;
+  containers: Container[];
+  containerSubscription: ZenObservable.Subscription | null;
+  items: Item[];
+  itemSubscription: ZenObservable.Subscription | null;
+  lastSelectedContainerId: string | null;
+  loadingState: LOADING_STATE;
+}
+
+const initialState: State = {
+  location: null,
+  locationSubscription: null,
+  containers: [],
+  containerSubscription: null,
+  items: [],
+  itemSubscription: null,
+  lastSelectedContainerId: null,
+  loadingState: LOADING_STATE.NOT_BEGUN,
+};
 
 export default createStore({
-  state: {
-    location: null,
-    locationSubscription: null,
-    containers: [],
-    containerSubscription: null,
-    items: [],
-    itemSubscription: null,
-    lastSelectedContainerId: null,
-    loadingState: LOADING_STATE.NOT_BEGUN,
-  },
+  state: initialState,
   getters: {
     containers: (state) => state.containers,
     items: (state) => state.items,
     location: (state) => state.location,
-    getChildrenForContainer: (state) => (container) =>
-      state.containers.filter((c) => c.parentContainerID === container.id),
-    getAncestorsForContainer: (state) => (container) =>
+    getChildrenForContainer: (state) => (container: Container) =>
+      state.containers.filter((c: Container) => c.parentContainerID === container.id),
+    getAncestorsForContainer: (state) => (container: Container) =>
       getContainerAncestorsRecursive(container, state.containers),
-    getAncestorStringForContainer: (state) => (container) =>
+    getAncestorStringForContainer: (state) => (container: Container) =>
       getContainerAncestorsRecursive(container, state.containers)
-        .map((c) => c.name)
+        .map((c: Container) => c.name)
         .join(" / "),
-    getContainerForItem: (state) => (item) =>
-      state.containers.find((c) => c.id === item.containerID),
+    getContainerForItem: (state) => (item: Item) =>
+      state.containers.find((c: Container) => c.id === item.containerID),
     lastSelectedContainerId: (state) => state.lastSelectedContainerId,
     isLoadingStateNotLoaded: (state) =>
-      state.loadingState === LOADING_STATE.LOADING ||
-      state.loadingState === LOADING_STATE.NOT_BEGUN,
+      [LOADING_STATE.LOADING, LOADING_STATE.NOT_BEGUN].includes(state.loadingState),
     isLoadingStateSuccess: (state) => state.loadingState === LOADING_STATE.SUCCESS,
     isLoadingStateError: (state) => state.loadingState === LOADING_STATE.ERROR,
   },
@@ -46,10 +59,14 @@ export default createStore({
       state.location = location;
     },
     updateContainers(state, containers) {
-      state.containers = containers.sort((a, b) => a.name.localeCompare(b.name));
+      state.containers = containers.sort((a: Container, b: Container) =>
+        a.name.localeCompare(b.name)
+      );
     },
     updateItems(state, items) {
-      state.items = items.sort((a, b) => b._lastChangedAt - a._lastChangedAt);
+      state.items = items.sort((a: Container, b: Container) =>
+        (b.updatedAt || b.createdAt || b.name).localeCompare(a.updatedAt || a.createdAt || a.name)
+      );
     },
     updateLastSelectedContainerId(state, id) {
       state.lastSelectedContainerId = id;
@@ -85,20 +102,15 @@ export default createStore({
       });
     },
     async syncContainers({ commit, state }) {
-      if (!state.location) {
-        throw new Error("Location not loaded");
-      }
-
-      const containers = await DataStore.query(Container, (c) =>
-        c.locationID.eq(state.location.id)
-      );
+      const location = assertLocation(state.location);
+      const containers = await DataStore.query(Container, (c) => c.locationID.eq(location.id));
       commit("updateContainers", containers);
 
       if (state.containerSubscription) {
         state.containerSubscription.unsubscribe();
       }
       state.containerSubscription = DataStore.observe(Container, (c) =>
-        c.locationID.eq(state.location.id)
+        c.locationID.eq(location.id)
       ).subscribe((msg) => {
         console.debug(
           `Container subscription ${msg.opType}: ${msg.element.name} - ${msg.element.id}`
@@ -127,18 +139,15 @@ export default createStore({
       });
     },
     async syncItems({ commit, state }) {
-      if (!state.location) {
-        throw new Error("Location not loaded");
-      }
-
-      const items = await DataStore.query(Item, (c) => c.locationID.eq(state.location.id));
+      const location = assertLocation(state.location);
+      const items = await DataStore.query(Item, (c) => c.locationID.eq(location.id));
       commit("updateItems", items);
 
       if (state.itemSubscription) {
         state.itemSubscription.unsubscribe();
       }
       state.itemSubscription = DataStore.observe(Item, (c) =>
-        c.locationID.eq(state.location.id)
+        c.locationID.eq(location.id)
       ).subscribe((msg) => {
         console.debug(`Item subscription ${msg.opType}: ${msg.element.name} - ${msg.element.id}`);
         switch (msg.opType) {
@@ -163,9 +172,10 @@ export default createStore({
       });
     },
     async addContainer({ commit, state }, input) {
+      const location = assertLocation(state.location);
       const container = new Container({
         name: input.name,
-        locationID: state.location.id,
+        locationID: location.id,
         parentContainerID: input.parentContainerId || undefined,
       });
 
@@ -174,9 +184,10 @@ export default createStore({
       });
     },
     async addItem({ commit, state }, input) {
+      const location = assertLocation(state.location);
       const item = new Item({
         name: input.name,
-        locationID: state.location.id,
+        locationID: location.id,
         containerID: input.containerId || undefined,
       });
       await DataStore.save(item).then(() => {
@@ -185,53 +196,77 @@ export default createStore({
     },
     async updateContainer({ commit, state }, input) {
       await DataStore.query(Container, input.id).then(async (originalContainer) => {
-        const newContainer = Container.copyOf(originalContainer, (updated) => {
-          updated.name = input.name;
-          updated.parentContainerID = input.parentContainerId || undefined;
-        });
-        await DataStore.save(newContainer).then(() => {
-          commit("updateContainers", [
-            ...state.containers.filter((c) => c.id !== input.id),
-            newContainer,
-          ]);
-        });
+        if (originalContainer) {
+          const newContainer = Container.copyOf(originalContainer, (updated) => {
+            updated.name = input.name;
+            updated.parentContainerID = input.parentContainerId || undefined;
+          });
+          await DataStore.save(newContainer).then(() => {
+            commit("updateContainers", [
+              ...state.containers.filter((c) => c.id !== input.id),
+              newContainer,
+            ]);
+          });
+        }
       });
     },
     async updateItem({ commit, state }, input) {
       await DataStore.query(Item, input.id).then(async (originalItem) => {
-        const newItem = Item.copyOf(originalItem, (updated) => {
-          updated.name = input.name;
-          updated.containerID = input.containerId || undefined;
-        });
-        await DataStore.save(newItem).then(() => {
-          commit("updateItems", [...state.items.filter((i) => i.id !== input.id), newItem]);
-        });
+        if (originalItem) {
+          const newItem = Item.copyOf(originalItem, (updated) => {
+            updated.name = input.name;
+            updated.containerID = input.containerId || undefined;
+          });
+          await DataStore.save(newItem).then(() => {
+            commit("updateItems", [...state.items.filter((i) => i.id !== input.id), newItem]);
+          });
+        }
       });
     },
     async deleteContainer({ commit, state }, id) {
-      await DataStore.delete(await DataStore.query(Container, id)).then(
-        commit(
-          "updateContainers",
-          state.containers.filter((container) => container.id !== id)
-        )
-      );
+      const container = await DataStore.query(Container, id);
+      if (container) {
+        await DataStore.delete(container).then(() =>
+          commit(
+            "updateContainers",
+            state.containers.filter((container) => container.id !== id)
+          )
+        );
+      }
     },
     async deleteItem({ commit, state }, id) {
-      await DataStore.delete(await DataStore.query(Item, id)).then(
-        commit(
-          "updateItems",
-          state.items.filter((item) => item.id !== id)
-        )
-      );
+      const item = await DataStore.query(Item, id);
+      if (item) {
+        await DataStore.delete(item).then(() =>
+          commit(
+            "updateItems",
+            state.items.filter((item) => item.id !== id)
+          )
+        );
+      }
     },
   },
   modules: {},
 });
 
-function getContainerAncestorsRecursive(container, containers) {
+function getContainerAncestorsRecursive(
+  container: Container,
+  containers: Container[]
+): Container[] {
   if (!container.parentContainerID) {
     return [];
   }
   const parent = containers.find((c) => c.id === container.parentContainerID);
-  return [...getContainerAncestorsRecursive(parent, containers), parent];
+  if (parent) {
+    return [...getContainerAncestorsRecursive(parent, containers), parent];
+  } else {
+    return [];
+  }
+}
+
+function assertLocation(location: Location | null): Location {
+  if (!location) {
+    throw new Error("Location not loaded");
+  }
+  return location;
 }

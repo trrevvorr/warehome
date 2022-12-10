@@ -2,15 +2,17 @@
   <router-view v-if="isLoadingStateSuccess" />
 </template>
 
-<script>
+<script lang="ts">
 import { mapGetters } from "vuex";
 import { useLoadingBar } from "naive-ui";
+import { LoadingBarInst } from "naive-ui/es/loading-bar/src/LoadingBarProvider";
+import { defineComponent } from "vue";
 
-export default {
+export default defineComponent({
   name: "RootView",
   data() {
     return {
-      loadingBar: {},
+      loadingBar: {} as LoadingBarInst,
     };
   },
   watch: {
@@ -44,10 +46,8 @@ export default {
       "isLoadingStateSuccess",
     ]),
   },
-  methods: {
-  },
-};
+  methods: {},
+});
 </script>
 
-<style>
-</style>
+<style></style>

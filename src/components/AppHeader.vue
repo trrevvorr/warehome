@@ -13,7 +13,7 @@
           </n-button>
           <div class="nav">
             <n-radio-group
-              :value="$route.name"
+              :value="$route.name?.toString() || 'items'"
               :on-update:value="(val) => $router.push({ name: val })"
               name="route-group"
             >
@@ -31,20 +31,14 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { mapGetters, mapMutations } from "vuex";
-import {
-  NRadioButton,
-  NRadioGroup,
-  NButton,
-  NIcon,
-  NSpace,
-  NPageHeader,
-} from "naive-ui";
+import { NRadioButton, NRadioGroup, NButton, NIcon, NSpace, NPageHeader } from "naive-ui";
 import { DataStore } from "@aws-amplify/datastore";
 import { ArrowClockwise12Regular } from "@vicons/fluent";
+import { defineComponent } from "vue";
 
-export default {
+export default defineComponent({
   name: "RootView",
   components: {
     NRadioButton,
@@ -76,7 +70,7 @@ export default {
       console.info("Reloaded data");
     },
   },
-};
+});
 </script>
 
 <style>

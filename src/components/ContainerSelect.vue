@@ -22,12 +22,14 @@
   </div>
 </template>
 
-<script>
-import { NTreeSelect, NButton, NIcon } from "naive-ui";
+<script lang="ts">
+import { NTreeSelect, NButton, NIcon, TreeSelectOption } from "naive-ui";
 import { mapGetters, mapMutations } from "vuex";
 import { ClockToolbox24Regular } from "@vicons/fluent";
+import { Container } from "@/models";
+import { defineComponent } from "vue";
 
-export default {
+export default defineComponent({
   name: "ContainerSelect",
   components: { NTreeSelect, NButton, NIcon, ClockToolbox24Regular },
   emits: ["selectOption"],
@@ -56,39 +58,39 @@ export default {
       "getAncestorsForContainer",
     ]),
     options() {
-      const rootContainers = this.containers.filter((c) => c.parentContainerID === null);
+      const rootContainers = this.containers.filter((c: Container) => c.parentContainerID === null);
       return this.containersOptionsRecursive(rootContainers) || [];
     },
     defaultExpandedKeys() {
       const selectedContainer = this.value
-        ? this.containers.find((c) => c.id === this.value)
+        ? this.containers.find((c: Container) => c.id === this.value)
         : null;
       return selectedContainer
-        ? this.getAncestorsForContainer(selectedContainer).map((ancestor) => ancestor.id)
+        ? this.getAncestorsForContainer(selectedContainer).map((ancestor: Container) => ancestor.id)
         : [];
     },
   },
   methods: {
     ...mapMutations(["updateLastSelectedContainerId"]),
-    containersOptionsRecursive(containers) {
+    containersOptionsRecursive(containers: Container[]): TreeSelectOption[] {
       const options = containers.map((container) => {
         const children = this.containersOptionsRecursive(this.getChildrenForContainer(container));
         return {
           label: container.name,
           key: container.id,
-          children: children,
+          children: children.length ? children : undefined,
           disabled: this.selectLeafNodesOnly && children && children.length > 0,
         };
       });
 
-      return options.length ? options : undefined;
+      return options;
     },
-    handleChange(value) {
+    handleChange(value: string) {
       this.updateLastSelectedContainerId(value);
       this.$emit("selectOption", value);
     },
   },
-};
+});
 </script>
 
 <style scoped>

@@ -22,15 +22,16 @@
   <container-table :query="query" @editContainer="(id) => (editContainerId = id)" />
 </template>
 
-<script>
+<script lang="ts">
 import { mapActions, mapGetters } from "vuex";
 import PutContainerForm from "../components/PutContainerForm.vue";
 import { Search12Regular, Add12Regular } from "@vicons/fluent";
-import { markRaw } from "vue";
+import { defineComponent, markRaw } from "vue";
 import { NModal, NIcon, NInput, NButton, NH2, NText } from "naive-ui";
 import ContainerTable from "../components/ContainerTable.vue";
+import { Container } from "@/models";
 
-export default {
+export default defineComponent({
   name: "ContainerForm",
   components: {
     PutContainerForm,
@@ -66,18 +67,20 @@ export default {
   computed: {
     ...mapGetters(["containers"]),
     filteredContainers() {
-      return this.containers.filter((c) => c.name.toLowerCase().includes(this.query.toLowerCase()));
+      return this.containers.filter((c: Container) =>
+        c.name.toLowerCase().includes(this.query.toLowerCase())
+      );
     },
     editContainer() {
       return this.editContainerId
-        ? this.containers.find((c) => c.id === this.editContainerId)
+        ? this.containers.find((c: Container) => c.id === this.editContainerId)
         : null;
     },
   },
   methods: {
     ...mapActions(["addContainer", "deleteContainer"]),
   },
-};
+});
 </script>
 
 <style scoped>

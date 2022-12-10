@@ -8,12 +8,14 @@
   />
 </template>
 
-<script>
+<script lang="ts">
 import { mapGetters } from "vuex";
-import { NDataTable, NButton } from "naive-ui";
-import { h } from "vue";
+import { NDataTable, NButton, DataTableColumns } from "naive-ui";
+import { defineComponent, h } from "vue";
+import { Container, Item } from "@/models";
+import { RowData } from "naive-ui/es/data-table/src/interface";
 
-export default {
+export default defineComponent({
   name: "ContainerTable",
   emits: ["editContainer"],
   components: { NDataTable },
@@ -25,38 +27,39 @@ export default {
   },
   data() {
     return {
-      columns: this.createColumns((id) => this.$emit("editContainer", id)),
+      columns: this.createColumns((id: string) => this.$emit("editContainer", id)),
     };
   },
   computed: {
     ...mapGetters(["containers", "items", "getChildrenForContainer"]),
     containersData() {
       return this.containers
-        .filter((c) => !c.parentContainerID)
-        .map((c) => this.containerDataRecursive(c))
-        .filter((c) => c);
+        .filter((c: Container) => !c.parentContainerID)
+        .map((c: Container) => this.containerDataRecursive(c))
+        .filter((c: Container) => c);
     },
   },
   methods: {
-    containerDataRecursive(container) {
+    containerDataRecursive(container: Container) {
       const searchMatches = container.name.toLowerCase().includes(this.query.toLowerCase());
       if (searchMatches) {
         const children = this.getChildrenForContainer(container)
-          .map((c) => this.containerDataRecursive(c))
-          .filter((c) => c);
+          .map((c: Container) => this.containerDataRecursive(c))
+          .filter((c: Container) => c);
 
         return {
           name: container.name,
           id: container.id,
           key: container.id,
-          items: this.items.filter((i) => i.containerID === container.id).length,
+          items: this.items.filter((i: Item) => i.containerID === container.id).length,
           children: children,
         };
       }
 
       return null;
     },
-    createColumns(editAction) {
+    // eslint-disable-next-line no-unused-vars
+    createColumns(editAction: (id: string) => void): DataTableColumns {
       return [
         {
           title: "Name",
@@ -69,7 +72,7 @@ export default {
         {
           title: "",
           key: "actions",
-          render(row) {
+          render(row: RowData) {
             return h(
               NButton,
               {
@@ -85,7 +88,7 @@ export default {
       ];
     },
   },
-};
+});
 </script>
 
 <style scoped></style>

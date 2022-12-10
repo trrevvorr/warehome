@@ -39,33 +39,37 @@
   </n-card>
 </template>
 
-<script setup>
+<script setup lang="ts">
 // n-form validation seems to require composition API for refs
 
-import { ref, defineEmits, defineProps, computed } from "vue";
-import { NForm, NFormItem, NInput, NButton, NCard, NTooltip, NSpace } from "naive-ui";
+import { ref, defineEmits, defineProps, computed, Ref } from "vue";
+import { NForm, NFormItem, NInput, NButton, NCard, NTooltip, NSpace, FormRules } from "naive-ui";
 import ContainerSelect from "./ContainerSelect.vue";
 import { useStore } from "vuex";
 import { useDialog } from "naive-ui";
+import { Container, Item } from "@/models";
 
 const store = useStore();
-const emit = defineEmits(["formSubmitted"]);
-
-const props = defineProps({
-  container: Object,
-});
+const emit = defineEmits<{
+  // eslint-disable-next-line no-unused-vars
+  (e: "formSubmitted"): void;
+}>();
+const props = defineProps<{
+  container: Container;
+}>();
 
 const dialog = useDialog();
-const formRef = ref(null);
+const formRef = ref(null) as Ref<any>;
 const formValue = ref({
   name: props.container?.name || "",
   parent: props.container?.parentContainerID || "",
 });
 const isNew = computed(() => !props.container);
 const items = ref(
-  props.container && store.getters.items.filter((item) => item.containerID === props.container.id)
+  props.container &&
+    store.getters.items.filter((item: Item) => item.containerID === props.container.id)
 );
-const rules = ref({
+const rules: Ref<FormRules> = ref({
   name: {
     required: true,
     trigger: "input",
@@ -80,17 +84,19 @@ const rules = ref({
     required: false,
     trigger: "blur",
   },
-});
+} as FormRules);
 
-function handleValidateClick(e) {
+function handleValidateClick(e: MouseEvent) {
   e.preventDefault();
-  formRef.value?.validate((errors) => {
-    if (!errors) {
-      addNewContainer();
-    } else {
-      console.warn("errors", errors);
-    }
-  });
+  if (formRef.value) {
+    formRef.value.validate((errors: Error[]) => {
+      if (!errors) {
+        addNewContainer();
+      } else {
+        console.warn("errors", errors);
+      }
+    });
+  }
 }
 
 async function addNewContainer() {

@@ -9,7 +9,7 @@
     </div>
 
     <div class="label">Container</div>
-    <ContainerLink v-if="getContainerForItem(item)" :container="getContainerForItem(item)" />
+    <ContainerLink v-if="container" :container="container" />
     <div v-else class="subtitle">None</div>
   </div>
   <n-alert v-else title="Not Found" type="info">
@@ -17,12 +17,14 @@
   </n-alert>
 </template>
 
-<script>
+<script lang="ts">
 import { mapGetters, mapActions } from "vuex";
 import ContainerLink from "../components/ContainerLink.vue";
 import { NButton, NAlert } from "naive-ui";
+import { Item } from "@/models";
+import { defineComponent } from "vue";
 
-export default {
+export default defineComponent({
   name: "ItemView",
   components: { ContainerLink, NButton, NAlert },
   props: {
@@ -32,15 +34,18 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["items"]),
+    ...mapGetters(["items", "getContainerForItem"]),
     item() {
-      return this.items.find((c) => c.id === this.itemId);
+      return this.items.find((i: Item) => i.id === this.itemId);
+    },
+    container() {
+      return this.getContainerForItem(this.item);
     },
   },
   methods: {
     ...mapActions(["deleteItem"]),
   },
-};
+});
 </script>
 
 <style scoped>

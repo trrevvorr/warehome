@@ -12,7 +12,7 @@
   </n-config-provider>
 </template>
 
-<script>
+<script lang="ts">
 import { DataStore, Hub } from "aws-amplify";
 import { NLoadingBarProvider, NConfigProvider, NDialogProvider, NGlobalStyle } from "naive-ui";
 import RootView from "./views/RootView.vue";
@@ -20,8 +20,9 @@ import { mapActions, mapMutations } from "vuex";
 import { Location } from "./models";
 import { darkTheme } from "naive-ui";
 import AppHeader from "./components/AppHeader.vue";
+import { defineComponent } from "vue";
 
-export default {
+export default defineComponent({
   name: "App",
   components: {
     NLoadingBarProvider,
@@ -32,7 +33,7 @@ export default {
     AppHeader,
   },
   data: () => ({
-    listener: null,
+    listener: () => {},
     darkTheme,
   }),
   created() {
@@ -68,7 +69,7 @@ export default {
     // Remove listener
     this.listener();
   },
-};
+});
 </script>
 
 <style>

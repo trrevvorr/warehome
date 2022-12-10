@@ -21,15 +21,16 @@
   <item-table :query="query" @editItem="(id) => (editItemId = id)" />
 </template>
 
-<script>
+<script lang="ts">
 import { mapGetters } from "vuex";
 import PutItemForm from "../components/PutItemForm.vue";
 import { NModal, NIcon, NInput, NButton, NH2, NText } from "naive-ui";
-import { markRaw } from "vue";
+import { defineComponent, markRaw } from "vue";
 import { Search12Regular, Add12Regular } from "@vicons/fluent";
 import ItemTable from "../components/ItemTable.vue";
+import { Item } from "@/models";
 
-export default {
+export default defineComponent({
   name: "ItemForm",
   components: { PutItemForm, NModal, NIcon, NInput, NButton, NH2, NText, ItemTable, Add12Regular },
   data() {
@@ -55,11 +56,11 @@ export default {
   computed: {
     ...mapGetters(["items"]),
     editItem() {
-      return this.editItemId ? this.items.find((item) => item.id === this.editItemId) : null;
+      return this.editItemId ? this.items.find((item: Item) => item.id === this.editItemId) : null;
     },
   },
   methods: {},
-};
+});
 </script>
 
 <style scoped>
