@@ -6,20 +6,24 @@
     :bordered="false"
     :default-expand-all="containersData.length < 2 || containers.length < 10"
   />
+  <n-modal v-model:show="showItemsModal" class="modal">
+    <items-list :containerId="itemsModalContainerId" />
+  </n-modal>
 </template>
 
 <script lang="ts">
 import { mapGetters } from "vuex";
-import { NDataTable, NButton, DataTableColumns, NIcon } from "naive-ui";
+import { NDataTable, NModal, NButton, DataTableColumns, NIcon } from "naive-ui";
 import { defineComponent, h } from "vue";
 import { Container, Item } from "@/models";
 import { RowData } from "naive-ui/es/data-table/src/interface";
 import { Edit16Regular } from "@vicons/fluent";
+import ItemsList from "./ItemsList.vue";
 
 export default defineComponent({
   name: "ContainerTable",
   emits: ["editContainer"],
-  components: { NDataTable },
+  components: { NDataTable, NModal, ItemsList },
   props: {
     query: {
       type: String,
@@ -28,8 +32,27 @@ export default defineComponent({
   },
   data() {
     return {
-      columns: this.createColumns((id: string) => this.$emit("editContainer", id)),
+      itemsModalContainerId: "",
+      columns: this.createColumns(
+        (id: string) => this.$emit("editContainer", id),
+        this.setItemModalContainerId
+      ),
+      showItemsModal: false,
     };
+  },
+  watch: {
+    showItemsModal(newShowItemsModal: boolean) {
+      if (!newShowItemsModal) {
+        this.itemsModalContainerId = "";
+      }
+    },
+    itemsModalContainerId(newItemsModalContainerId: string) {
+      if (newItemsModalContainerId) {
+        this.showItemsModal = true;
+      } else {
+        this.showItemsModal = false;
+      }
+    },
   },
   computed: {
     ...mapGetters([
@@ -61,15 +84,21 @@ export default defineComponent({
           name: container.name,
           id: container.id,
           key: container.id,
-          items: `${itemsCount}${children.length ? " / " + decedentItemsCount : ""}`,
+          itemsCount: `${itemsCount}${
+            children.length ? " / " + (itemsCount + decedentItemsCount) : ""
+          }`,
           children: children,
         };
       }
 
       return null;
     },
-    // eslint-disable-next-line no-unused-vars
-    createColumns(editAction: (id: string) => void): DataTableColumns {
+    createColumns(
+      // eslint-disable-next-line no-unused-vars
+      editAction: (id: string) => void,
+      // eslint-disable-next-line no-unused-vars
+      setItemModalContainerId: (id: string) => void
+    ): DataTableColumns {
       return [
         {
           title: "Name",
@@ -78,9 +107,19 @@ export default defineComponent({
         {
           title: "Items",
           key: "items",
+          render(row: RowData) {
+            return h(
+              NButton,
+              {
+                quaternary: true,
+                onClick: () => setItemModalContainerId(row.id),
+              },
+              { default: () => row.itemsCount }
+            );
+          },
         },
         {
-          title: "",
+          title: "Edit",
           key: "actions",
           render(row: RowData) {
             return h(
@@ -95,8 +134,19 @@ export default defineComponent({
         },
       ];
     },
+    setItemModalContainerId(id: string) {
+      this.itemsModalContainerId = id;
+    },
   },
 });
 </script>
 
 <style scoped></style>
+
+<style scoped>
+.modal {
+  margin: auto;
+  width: calc(100vw - 2rem);
+  max-width: 30rem;
+}
+</style>
