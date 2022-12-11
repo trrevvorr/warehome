@@ -17,9 +17,19 @@
         />
       </n-form-item>
       <n-form-item>
-        <n-space>
-          <n-button v-if="!isNew" type="error" @click="handleConfirmDelete"> Delete </n-button>
-          <n-button @click="handleValidateClick" type="primary"> Save </n-button>
+        <n-space align="center">
+          <n-button
+            :loading="deleteLoading"
+            v-if="!isNew"
+            type="error"
+            @click="handleConfirmDelete"
+          >
+            Delete
+          </n-button>
+          <n-button :loading="saveLoading" @click="handleValidateClick" type="primary">
+            Save
+          </n-button>
+          <n-checkbox v-if="isNew" v-model:checked="keepOpen"> Add More </n-checkbox>
         </n-space>
       </n-form-item>
     </n-form>
@@ -30,7 +40,7 @@
 // n-form validation seems to require composition API for refs
 
 import { ref, defineEmits, defineProps, computed } from "vue";
-import { NForm, NFormItem, NInput, NButton, NCard, NSpace } from "naive-ui";
+import { NForm, NFormItem, NInput, NButton, NCheckbox, NCard, NSpace } from "naive-ui";
 import ContainerSelect from "./ContainerSelect.vue";
 import { useStore } from "vuex";
 import { useDialog } from "naive-ui";
@@ -42,6 +52,9 @@ const props = defineProps({
   item: Object,
 });
 
+const keepOpen = ref(false);
+const deleteLoading = ref(false);
+const saveLoading = ref(false);
 const dialog = useDialog();
 const formRef = ref(null);
 const formValue = ref({
@@ -72,6 +85,7 @@ function handleValidateClick(e) {
 }
 
 async function addNewItem() {
+  saveLoading.value = true;
   await store.dispatch(isNew.value ? "addItem" : "updateItem", {
     id: props.item?.id,
     name: formValue.value.name.trim(),
@@ -82,7 +96,10 @@ async function addNewItem() {
     formValue.value.name = "";
     formValue.value.container = "";
   }
-  emit("formSubmitted");
+  saveLoading.value = false;
+  if (!keepOpen.value) {
+    emit("formSubmitted");
+  }
 }
 
 function handleConfirmDelete() {
@@ -99,7 +116,9 @@ function handleConfirmDelete() {
 }
 
 async function handleDelete() {
+  deleteLoading.value = true;
   await store.dispatch("deleteItem", props.item.id);
+  deleteLoading.value = false;
   emit("formSubmitted");
 }
 </script>

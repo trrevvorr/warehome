@@ -17,7 +17,7 @@
         />
       </n-form-item>
       <n-form-item>
-        <n-space>
+        <n-space align="center">
           <span v-if="!isNew">
             <n-tooltip
               v-if="
@@ -30,9 +30,14 @@
               </template>
               Cannot delete container with children or items
             </n-tooltip>
-            <n-button v-else type="error" @click="handleConfirmDelete"> Delete </n-button>
+            <n-button :loading="deleteLoading" v-else type="error" @click="handleConfirmDelete">
+              Delete
+            </n-button>
           </span>
-          <n-button @click="handleValidateClick" type="primary"> Save </n-button>
+          <n-button :loading="saveLoading" @click="handleValidateClick" type="primary">
+            Save
+          </n-button>
+          <n-checkbox v-if="isNew" v-model:checked="keepOpen"> Add More </n-checkbox>
         </n-space>
       </n-form-item>
     </n-form>
@@ -43,7 +48,17 @@
 // n-form validation seems to require composition API for refs
 
 import { ref, defineEmits, defineProps, computed, Ref } from "vue";
-import { NForm, NFormItem, NInput, NButton, NCard, NTooltip, NSpace, FormRules } from "naive-ui";
+import {
+  NForm,
+  NFormItem,
+  NInput,
+  NButton,
+  NCard,
+  NTooltip,
+  NSpace,
+  FormRules,
+  NCheckbox,
+} from "naive-ui";
 import ContainerSelect from "./ContainerSelect.vue";
 import { useStore } from "vuex";
 import { useDialog } from "naive-ui";
@@ -58,6 +73,9 @@ const props = defineProps<{
   container: Container;
 }>();
 
+const keepOpen = ref(false);
+const deleteLoading = ref(false);
+const saveLoading = ref(false);
 const dialog = useDialog();
 const formRef = ref(null) as Ref<any>;
 const formValue = ref({
@@ -100,6 +118,7 @@ function handleValidateClick(e: MouseEvent) {
 }
 
 async function addNewContainer() {
+  saveLoading.value = true;
   await store.dispatch(isNew.value ? "addContainer" : "updateContainer", {
     id: props.container?.id,
     name: formValue.value.name,
@@ -110,7 +129,10 @@ async function addNewContainer() {
     formValue.value.name = "";
     formValue.value.parent = "";
   }
-  emit("formSubmitted");
+  saveLoading.value = false;
+  if (!keepOpen.value) {
+    emit("formSubmitted");
+  }
 }
 
 function handleConfirmDelete() {
@@ -127,7 +149,9 @@ function handleConfirmDelete() {
 }
 
 async function handleDelete() {
+  deleteLoading.value = true;
   await store.dispatch("deleteContainer", props.container.id);
+  deleteLoading.value = false;
   emit("formSubmitted");
 }
 </script>
