@@ -85,7 +85,9 @@ export default defineComponent({
     ...mapMutations(["addSelectedContainerId"]),
     containersOptionsRecursive(containers: Container[]): TreeSelectOption[] {
       const options = containers.map((container) => {
-        const children = this.containersOptionsRecursive(this.getChildrenForContainer(container));
+        const children = this.containersOptionsRecursive(
+          this.getChildrenForContainer(container.id)
+        );
         return {
           label: container.name,
           key: container.id,

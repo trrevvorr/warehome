@@ -5,7 +5,12 @@
     role="dialog"
     aria-modal="true"
   >
-    <n-form ref="formRef" :model="formValue" :rules="rules">
+    <n-form
+      ref="formRef"
+      :model="formValue"
+      :rules="rules"
+      :disabled="deleteLoading || saveLoading"
+    >
       <n-form-item label="Name" path="name">
         <n-input v-model:value="formValue.name" placeholder="Item Name" />
       </n-form-item>
@@ -14,6 +19,7 @@
           placeholder="Container"
           :value="formValue.container"
           @selectOption="(val) => (formValue.container = val)"
+          :disabled="deleteLoading || saveLoading"
         />
       </n-form-item>
       <n-form-item>

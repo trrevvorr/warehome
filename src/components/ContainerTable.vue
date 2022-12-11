@@ -44,7 +44,7 @@ export default defineComponent({
     containerDataRecursive(container: Container) {
       const searchMatches = container.name.toLowerCase().includes(this.query.toLowerCase());
       if (searchMatches) {
-        const children = this.getChildrenForContainer(container)
+        const children = this.getChildrenForContainer(container.id)
           .map((c: Container) => this.containerDataRecursive(c))
           .filter((c: Container) => c);
 

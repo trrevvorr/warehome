@@ -1,5 +1,5 @@
 <template>
-  <n-form ref="formRef" :model="formValue" :rules="rules">
+  <n-form ref="formRef" :model="formValue" :rules="rules" :disabled="deleteLoading || saveLoading">
     <n-form-item label="Name" path="name">
       <n-input v-model:value="formValue.name" placeholder="Container Name" />
     </n-form-item>
@@ -8,6 +8,7 @@
         placeholder="Parent Container"
         :value="formValue.parent"
         @selectOption="(val) => (formValue.parent = val)"
+        :disabled="deleteLoading || saveLoading"
       />
     </n-form-item>
     <n-form-item>
@@ -17,7 +18,7 @@
             <template #trigger>
               <n-button disabled type="error" tag="div"> Delete </n-button>
             </template>
-            Cannot delete container with children or items
+            Cannot delete container with items
           </n-tooltip>
           <n-button :loading="deleteLoading" v-else type="error" @click="handleConfirmDelete">
             Delete
@@ -119,10 +120,13 @@ async function addNewContainer() {
 }
 
 function handleConfirmDelete() {
+  const hasChildren = store.getters.getChildrenForContainer(props.container.id).length > 0;
   dialog.error({
     title: "Confirm Delete",
-    content: `Are you sure you want to delete ${props.container.name}?`,
-    positiveText: "Delete",
+    content: `Are you sure you want to delete ${props.container.name}${
+      hasChildren ? " and ALL ITS CHILD CONTAINERS" : ""
+    }?`,
+    positiveText: hasChildren ? "Delete All" : "Delete",
     negativeText: "Cancel",
     onPositiveClick: () => {
       handleDelete();

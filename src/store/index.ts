@@ -1,6 +1,6 @@
 import { createStore } from "vuex";
 import { DataStore } from "@aws-amplify/datastore";
-import { Location, Container, Item } from "../models";
+import { Location, Container, Item, LazyContainer } from "../models";
 import { ZenObservable } from "zen-observable-ts/lib/types";
 
 enum LOADING_STATE {
@@ -38,8 +38,8 @@ export default createStore({
     containers: (state) => state.containers,
     items: (state) => state.items,
     location: (state) => state.location,
-    getChildrenForContainer: (state) => (container: Container) =>
-      state.containers.filter((c: Container) => c.parentContainerID === container.id),
+    getChildrenForContainer: (state) => (containerId: string) =>
+      childrenForContainer(state, containerId),
     getAncestorsForContainer: (state) => (container: Container) =>
       getContainerAncestorsRecursive(container, state.containers),
     getAncestorStringForContainer: (state) => (container: Container) =>
@@ -83,12 +83,8 @@ export default createStore({
           .map((id) => state.containers.find((c) => c.id === id))
           .filter((c) => c) as Container[];
       },
-    isContainerDeleteAllowed: (state) => (containerId: string) => {
-      if (!containerId) return false;
-      const children = state.containers.filter((c) => c.parentContainerID === containerId);
-      const items = state.items.filter((i) => i.containerID === containerId);
-      return children.length === 0 && items.length === 0;
-    },
+    isContainerDeleteAllowed: (state) => (containerId: string) =>
+      containerDeleteAllowedRecursive(state, containerId),
   },
   mutations: {
     updateLocation(state, location) {
@@ -215,7 +211,7 @@ export default createStore({
         parentContainerID: input.parentContainerId || undefined,
       });
 
-      DataStore.save(container).then(() => {
+      await DataStore.save(container).then(() => {
         commit("updateContainers", [...state.containers, container]);
       });
     },
@@ -259,14 +255,22 @@ export default createStore({
         }
       });
     },
-    async deleteContainer({ commit, state }, id) {
+    async deleteContainer({ commit, state, dispatch }, id) {
       const container = await DataStore.query(Container, id);
       if (container) {
-        await DataStore.delete(container).then(() =>
-          commit(
-            "updateContainers",
-            state.containers.filter((container) => container.id !== id)
-          )
+        if (!containerDeleteAllowedRecursive(state, id)) {
+          throw new Error(`Container ${container.id} is not empty.`);
+        }
+
+        const containerChildren = childrenForContainer(state, id);
+        await Promise.all(containerChildren.map((c) => dispatch("deleteContainer", c.id))).then(
+          () =>
+            DataStore.delete(container).then(() =>
+              commit(
+                "updateContainers",
+                state.containers.filter((container) => container.id !== id)
+              )
+            )
         );
       }
     },
@@ -284,6 +288,19 @@ export default createStore({
   },
   modules: {},
 });
+
+function containerDeleteAllowedRecursive(state: State, containerId: string): boolean {
+  if (!containerId) return false;
+  const items = state.items.filter((i) => i.containerID === containerId);
+  if (items.length) return false;
+
+  const children = childrenForContainer(state, containerId);
+  return children.every((c) => containerDeleteAllowedRecursive(state, c.id));
+}
+
+function childrenForContainer(state: State, containerId: string) {
+  return state.containers.filter((c: Container) => c.parentContainerID === containerId);
+}
 
 function getContainerAncestorsRecursive(
   container: Container,

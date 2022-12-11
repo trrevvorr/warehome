@@ -1,5 +1,11 @@
 <template>
-  <n-form ref="formRef" :model="formValue" :rules="rules" id="batch-create-container-form">
+  <n-form
+    ref="formRef"
+    :model="formValue"
+    :rules="rules"
+    id="batch-create-container-form"
+    :disabled="saveLoading"
+  >
     <fieldset>
       <legend>Name</legend>
       <div class="name-input">
@@ -43,6 +49,7 @@
         placeholder="Parent Container"
         :value="formValue.parent"
         @selectOption="(val) => (formValue.parent = val)"
+        :disabled="saveLoading"
       />
     </n-form-item>
     <n-form-item>
@@ -128,7 +135,7 @@ const rules: Ref<FormRules> = ref({
     validator: (rule, value) => validateRange(value),
   },
   parent: {
-    required: false,
+    required: true,
     trigger: "blur",
   },
 } as FormRules);
@@ -190,7 +197,7 @@ async function addNewContainer() {
   display: grid;
   grid-template-columns: 1fr minmax(7rem, 1fr) 1fr;
   grid-gap: 0.5rem;
-  align-items: center;
+  align-items: start;
 }
 #batch-create-container-form .range-input input::-webkit-outer-spin-button,
 #batch-create-container-form .range-input input::-webkit-inner-spin-button {
