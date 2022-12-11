@@ -22,7 +22,7 @@
     </template>
   </n-button>
   <n-modal v-model:show="showModal" class="modal">
-    <put-container-form @formSubmitted="showModal = false" :container="editContainer" />
+    <put-container-form-wrapper @formSubmitted="showModal = false" :container="editContainer" />
   </n-modal>
 
   <container-table :query="query" @editContainer="(id) => (editContainerId = id)" />
@@ -30,7 +30,7 @@
 
 <script lang="ts">
 import { mapActions, mapGetters } from "vuex";
-import PutContainerForm from "../components/PutContainerForm.vue";
+import PutContainerFormWrapper from "../components/PutContainerFormWrapper.vue";
 import { Search12Regular, Add16Filled } from "@vicons/fluent";
 import { defineComponent, markRaw } from "vue";
 import { NModal, NIcon, NInput, NButton, NH2, NText } from "naive-ui";
@@ -40,7 +40,7 @@ import { Container } from "@/models";
 export default defineComponent({
   name: "ContainerForm",
   components: {
-    PutContainerForm,
+    PutContainerFormWrapper,
     NModal,
     NIcon,
     NInput,

@@ -104,6 +104,7 @@ export default defineComponent({
   margin: 0 auto;
   overflow-y: scroll;
   padding-top: 1rem;
+  padding-bottom: 3rem;
 }
 
 .n-h {

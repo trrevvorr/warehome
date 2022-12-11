@@ -1,47 +1,40 @@
 <template>
-  <n-card
-    :title="`${isNew ? 'New' : 'Edit'} Container`"
-    :bordered="false"
-    role="dialog"
-    aria-modal="true"
-  >
-    <n-form ref="formRef" :model="formValue" :rules="rules">
-      <n-form-item label="Name" path="name">
-        <n-input v-model:value="formValue.name" placeholder="Container Name" />
-      </n-form-item>
-      <n-form-item label="Parent Container" path="parent">
-        <container-select
-          placeholder="Parent Container"
-          :value="formValue.parent"
-          @selectOption="(val) => (formValue.parent = val)"
-        />
-      </n-form-item>
-      <n-form-item>
-        <n-space align="center">
-          <span v-if="!isNew">
-            <n-tooltip
-              v-if="
-                store.getters.getChildrenForContainer(container).length > 0 ||
-                (items && items.length > 0)
-              "
-            >
-              <template #trigger>
-                <n-button disabled type="error" tag="div"> Delete </n-button>
-              </template>
-              Cannot delete container with children or items
-            </n-tooltip>
-            <n-button :loading="deleteLoading" v-else type="error" @click="handleConfirmDelete">
-              Delete
-            </n-button>
-          </span>
-          <n-button :loading="saveLoading" @click="handleValidateClick" type="primary">
-            Save
+  <n-form ref="formRef" :model="formValue" :rules="rules">
+    <n-form-item label="Name" path="name">
+      <n-input v-model:value="formValue.name" placeholder="Container Name" />
+    </n-form-item>
+    <n-form-item label="Parent Container" path="parent">
+      <container-select
+        placeholder="Parent Container"
+        :value="formValue.parent"
+        @selectOption="(val) => (formValue.parent = val)"
+      />
+    </n-form-item>
+    <n-form-item>
+      <n-space align="center">
+        <span v-if="!isNew">
+          <n-tooltip
+            v-if="
+              store.getters.getChildrenForContainer(container).length > 0 ||
+              (items && items.length > 0)
+            "
+          >
+            <template #trigger>
+              <n-button disabled type="error" tag="div"> Delete </n-button>
+            </template>
+            Cannot delete container with children or items
+          </n-tooltip>
+          <n-button :loading="deleteLoading" v-else type="error" @click="handleConfirmDelete">
+            Delete
           </n-button>
-          <n-checkbox v-if="isNew" v-model:checked="keepOpen"> Add More </n-checkbox>
-        </n-space>
-      </n-form-item>
-    </n-form>
-  </n-card>
+        </span>
+        <n-button :loading="saveLoading" @click="handleValidateClick" type="primary">
+          Save
+        </n-button>
+        <n-checkbox v-if="isNew" v-model:checked="keepOpen"> Add More </n-checkbox>
+      </n-space>
+    </n-form-item>
+  </n-form>
 </template>
 
 <script setup lang="ts">
@@ -53,7 +46,6 @@ import {
   NFormItem,
   NInput,
   NButton,
-  NCard,
   NTooltip,
   NSpace,
   FormRules,
@@ -67,7 +59,7 @@ import { Container, Item } from "@/models";
 const store = useStore();
 const emit = defineEmits<{
   // eslint-disable-next-line no-unused-vars
-  (e: "formSubmitted"): void;
+  (e: "closeForm"): void;
 }>();
 const props = defineProps<{
   container: Container;
@@ -131,7 +123,7 @@ async function addNewContainer() {
   }
   saveLoading.value = false;
   if (!keepOpen.value) {
-    emit("formSubmitted");
+    emit("closeForm");
   }
 }
 
@@ -152,6 +144,6 @@ async function handleDelete() {
   deleteLoading.value = true;
   await store.dispatch("deleteContainer", props.container.id);
   deleteLoading.value = false;
-  emit("formSubmitted");
+  emit("closeForm");
 }
 </script>
