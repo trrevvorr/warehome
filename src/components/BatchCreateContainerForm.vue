@@ -165,7 +165,7 @@ function handleValidateClick(e: MouseEvent) {
 async function addNewContainer() {
   saveLoading.value = true;
 
-  await Promise.all(
+  await Promise.allSettled(
     names.value.map((name) =>
       store.dispatch("addContainer", {
         name,

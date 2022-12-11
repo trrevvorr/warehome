@@ -13,12 +13,7 @@
     <n-form-item>
       <n-space align="center">
         <span v-if="!isNew">
-          <n-tooltip
-            v-if="
-              store.getters.getChildrenForContainer(container).length > 0 ||
-              (items && items.length > 0)
-            "
-          >
+          <n-tooltip v-if="!store.getters.isContainerDeleteAllowed(props.container.id)">
             <template #trigger>
               <n-button disabled type="error" tag="div"> Delete </n-button>
             </template>
@@ -54,7 +49,7 @@ import {
 import ContainerSelect from "./ContainerSelect.vue";
 import { useStore } from "vuex";
 import { useDialog } from "naive-ui";
-import { Container, Item } from "@/models";
+import { Container } from "@/models";
 
 const store = useStore();
 const emit = defineEmits<{
@@ -75,10 +70,6 @@ const formValue = ref({
   parent: props.container?.parentContainerID || "",
 });
 const isNew = computed(() => !props.container);
-const items = ref(
-  props.container &&
-    store.getters.items.filter((item: Item) => item.containerID === props.container.id)
-);
 const rules: Ref<FormRules> = ref({
   name: {
     required: true,

@@ -83,6 +83,12 @@ export default createStore({
           .map((id) => state.containers.find((c) => c.id === id))
           .filter((c) => c) as Container[];
       },
+    isContainerDeleteAllowed: (state) => (containerId: string) => {
+      if (!containerId) return false;
+      const children = state.containers.filter((c) => c.parentContainerID === containerId);
+      const items = state.items.filter((i) => i.containerID === containerId);
+      return children.length === 0 && items.length === 0;
+    },
   },
   mutations: {
     updateLocation(state, location) {
