@@ -4,7 +4,7 @@
     :data="containersData"
     :pagination="false"
     :bordered="false"
-    default-expand-all
+    :default-expand-all="containersData.length < 2 || containers.length < 10"
   />
 </template>
 
@@ -32,7 +32,13 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapGetters(["containers", "items", "getChildrenForContainer"]),
+    ...mapGetters([
+      "containers",
+      "items",
+      "getChildrenForContainer",
+      "getDescendantsForContainer",
+      "getItemsForContainer",
+    ]),
     containersData() {
       return this.containers
         .filter((c: Container) => !c.parentContainerID)
@@ -47,12 +53,15 @@ export default defineComponent({
         const children = this.getChildrenForContainer(container.id)
           .map((c: Container) => this.containerDataRecursive(c))
           .filter((c: Container) => c);
-
+        const itemsCount = this.items.filter((i: Item) => i.containerID === container.id).length;
+        const decedentItemsCount = this.getDescendantsForContainer(container.id).flatMap(
+          (c: Container) => this.getItemsForContainer(c.id)
+        ).length;
         return {
           name: container.name,
           id: container.id,
           key: container.id,
-          items: this.items.filter((i: Item) => i.containerID === container.id).length,
+          items: `${itemsCount}${children.length ? " / " + decedentItemsCount : ""}`,
           children: children,
         };
       }

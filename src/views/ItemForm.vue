@@ -65,7 +65,9 @@ export default defineComponent({
 
 <style scoped>
 .modal {
-  margin: 1rem;
+  margin: auto;
+  width: calc(100vw - 2rem);
+  max-width: 30rem;
 }
 
 .header {

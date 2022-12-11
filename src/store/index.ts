@@ -39,15 +39,19 @@ export default createStore({
     items: (state) => state.items,
     location: (state) => state.location,
     getChildrenForContainer: (state) => (containerId: string) =>
-      childrenForContainer(state, containerId),
+      childrenForContainer(state, containerId, true),
     getAncestorsForContainer: (state) => (container: Container) =>
       getContainerAncestorsRecursive(container, state.containers),
     getAncestorStringForContainer: (state) => (container: Container) =>
       getContainerAncestorsRecursive(container, state.containers)
         .map((c: Container) => c.name)
         .join(" / "),
+    getDescendantsForContainer: (state) => (containerId: string) =>
+      getContainerDescendantsRecursive(containerId, state.containers),
     getContainerForItem: (state) => (item: Item) =>
       state.containers.find((c: Container) => c.id === item.containerID),
+    getItemsForContainer: (state) => (containerId: string) =>
+      state.items.filter((i) => i.containerID === containerId),
     isLoadingStateNotLoaded: (state) =>
       [LOADING_STATE.LOADING, LOADING_STATE.NOT_BEGUN].includes(state.loadingState),
     isLoadingStateSuccess: (state) => state.loadingState === LOADING_STATE.SUCCESS,
@@ -298,8 +302,32 @@ function containerDeleteAllowedRecursive(state: State, containerId: string): boo
   return children.every((c) => containerDeleteAllowedRecursive(state, c.id));
 }
 
-function childrenForContainer(state: State, containerId: string) {
-  return state.containers.filter((c: Container) => c.parentContainerID === containerId);
+function childrenForContainer(
+  state: State,
+  containerId: string,
+  sorted: boolean = false
+): Container[] {
+  const children = state.containers.filter((c: Container) => c.parentContainerID === containerId);
+  if (sorted) {
+    return sortContainers(children);
+  } else {
+    return children;
+  }
+}
+
+function getContainerDescendantsRecursive(
+  containerId: string,
+  containers: Container[]
+): Container[] {
+  const children = containers.filter((c) => c.parentContainerID === containerId);
+  if (children.length) {
+    return [
+      ...children,
+      ...children.flatMap((c) => getContainerDescendantsRecursive(c.id, containers)),
+    ];
+  } else {
+    return [];
+  }
 }
 
 function getContainerAncestorsRecursive(
@@ -322,4 +350,47 @@ function assertLocation(location: Location | null): Location {
     throw new Error("Location not loaded");
   }
   return location;
+}
+
+function sortContainers(containers: Container[]): Container[] {
+  if (containers.length < 2) {
+    return containers;
+  }
+  const firstName = containers[0].name;
+
+  // calculate prefix
+  let prefix = "";
+  let nextPrefix = "";
+  do {
+    prefix = nextPrefix;
+    nextPrefix = firstName.slice(0, prefix.length + 1);
+  } while (containers.every((c) => c.name.startsWith(nextPrefix)) && nextPrefix !== prefix);
+
+  // calculate suffix
+  let suffix = "";
+  let nextSuffix = "";
+  do {
+    suffix = nextSuffix;
+    nextSuffix = containers[0].name.slice(
+      firstName.length - suffix.length - 1,
+      firstName.length - 1
+    );
+  } while (
+    containers.every((c) => c.name.endsWith(nextSuffix)) &&
+    nextSuffix !== suffix &&
+    (prefix + nextSuffix).length <= firstName.length
+  );
+
+  // sort based on prefix and suffix
+  return containers.sort((a, b) => {
+    const aName = a.name.slice(prefix.length, a.name.length - suffix.length);
+    const bName = b.name.slice(prefix.length, b.name.length - suffix.length);
+    const aNumber = parseInt(aName);
+    const bNumber = parseInt(bName);
+    if (isNaN(aNumber) || isNaN(bNumber)) {
+      return aName.localeCompare(bName);
+    } else {
+      return aNumber - bNumber;
+    }
+  });
 }
