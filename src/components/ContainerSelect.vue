@@ -82,7 +82,7 @@ export default defineComponent({
     },
   },
   methods: {
-    ...mapMutations(["updateLastSelectedContainerId"]),
+    ...mapMutations(["addSelectedContainerId"]),
     containersOptionsRecursive(containers: Container[]): TreeSelectOption[] {
       const options = containers.map((container) => {
         const children = this.containersOptionsRecursive(this.getChildrenForContainer(container));
@@ -97,7 +97,7 @@ export default defineComponent({
       return options;
     },
     handleChange(value: string) {
-      this.updateLastSelectedContainerId(value);
+      this.addSelectedContainerId(value);
       this.$emit("selectOption", value);
     },
   },

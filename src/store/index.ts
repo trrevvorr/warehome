@@ -17,7 +17,7 @@ interface State {
   containerSubscription: ZenObservable.Subscription | null;
   items: Item[];
   itemSubscription: ZenObservable.Subscription | null;
-  lastSelectedContainerId: string | null;
+  selectedContainerIds: { [key: string]: string };
   loadingState: LOADING_STATE;
 }
 
@@ -28,7 +28,7 @@ const initialState: State = {
   containerSubscription: null,
   items: [],
   itemSubscription: null,
-  lastSelectedContainerId: null,
+  selectedContainerIds: {},
   loadingState: LOADING_STATE.NOT_BEGUN,
 };
 
@@ -48,7 +48,6 @@ export default createStore({
         .join(" / "),
     getContainerForItem: (state) => (item: Item) =>
       state.containers.find((c: Container) => c.id === item.containerID),
-    lastSelectedContainerId: (state) => state.lastSelectedContainerId,
     isLoadingStateNotLoaded: (state) =>
       [LOADING_STATE.LOADING, LOADING_STATE.NOT_BEGUN].includes(state.loadingState),
     isLoadingStateSuccess: (state) => state.loadingState === LOADING_STATE.SUCCESS,
@@ -64,10 +63,14 @@ export default createStore({
           containerId: i.containerID,
           updatedAt: i.updatedAt,
         }));
+        const selectedContainerIds = Object.keys(state.selectedContainerIds).map((id) => ({
+          containerId: id,
+          updatedAt: state.selectedContainerIds[id],
+        }));
 
         return [
           ...new Set(
-            [...containers, ...items]
+            [...containers, ...items, ...selectedContainerIds]
               .sort((a, b) =>
                 a.updatedAt && b.updatedAt ? a.updatedAt.localeCompare(b.updatedAt) : 0
               )
@@ -95,8 +98,8 @@ export default createStore({
         (b.updatedAt || b.createdAt || b.name).localeCompare(a.updatedAt || a.createdAt || a.name)
       );
     },
-    updateLastSelectedContainerId(state, id) {
-      state.lastSelectedContainerId = id;
+    addSelectedContainerId(state, id) {
+      state.selectedContainerIds[id] = new Date().toISOString();
     },
     setLoadingStateLoading(state) {
       state.loadingState = LOADING_STATE.LOADING;
