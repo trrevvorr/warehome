@@ -14,7 +14,7 @@ type Container @model @auth(rules: [{ allow: owner }, { allow: private }]) {
   Containers: [Container] @hasMany(indexName: "byParentContainer", fields: ["id"])
 }
 
-type Location @model @auth(rules: [{ allow: owner }]) {
+type Location @model @auth(rules: [{ allow: owner }, { allow: private }]) {
   id: ID!
   name: String!
   Containers: [Container] @hasMany(indexName: "byLocation", fields: ["id"])

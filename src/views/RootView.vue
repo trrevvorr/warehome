@@ -1,5 +1,5 @@
 <template>
-  <router-view v-if="isLoadingStateSuccess" />
+  <router-view v-if="isLoadingStateSuccess || !isLoggedIn" />
 </template>
 
 <script lang="ts">
@@ -18,7 +18,7 @@ export default defineComponent({
     };
   },
   watch: {
-    isLoadingStateNotLoaded(newNotLoaded) {
+    isLoadingStateLoading(newNotLoaded) {
       if (newNotLoaded) {
         this.loadingBar.start();
       }
@@ -36,16 +36,17 @@ export default defineComponent({
   },
   created() {
     this.loadingBar = useLoadingBar();
-    if (this.isLoadingStateNotLoaded) {
+    if (this.isLoadingStateLoading) {
       this.loadingBar.start();
     }
   },
   computed: {
     ...mapGetters([
       "location",
-      "isLoadingStateNotLoaded",
+      "isLoadingStateLoading",
       "isLoadingStateError",
       "isLoadingStateSuccess",
+      "isLoggedIn",
     ]),
   },
 });

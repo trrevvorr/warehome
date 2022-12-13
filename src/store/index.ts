@@ -1,7 +1,11 @@
 import { createStore } from "vuex";
 import { DataStore } from "@aws-amplify/datastore";
-import { Location, Container, Item, LazyContainer } from "../models";
+import { Location, Container, Item } from "../models";
 import { ZenObservable } from "zen-observable-ts/lib/types";
+import { Auth, Hub } from "aws-amplify";
+import { CognitoUser } from "@aws-amplify/auth";
+import { HubCallback } from "@aws-amplify/core";
+import router, { RouteNames } from "@/router";
 
 enum LOADING_STATE {
   LOADING = "loading",
@@ -10,7 +14,10 @@ enum LOADING_STATE {
   NOT_BEGUN = "not_begun",
 }
 
+let dataStoreListener: () => void = () => {};
+
 interface State {
+  user: CognitoUser | null;
   location: Location | null;
   locationSubscription: ZenObservable.Subscription | null;
   containers: Container[];
@@ -22,6 +29,7 @@ interface State {
 }
 
 const initialState: State = {
+  user: null,
   location: null,
   locationSubscription: null,
   containers: [],
@@ -33,8 +41,9 @@ const initialState: State = {
 };
 
 export default createStore({
-  state: initialState,
+  state: Object.assign({}, initialState),
   getters: {
+    isLoggedIn: (state) => !!state.user,
     containers: (state) => state.containers,
     items: (state) => state.items,
     location: (state) => state.location,
@@ -52,8 +61,8 @@ export default createStore({
       state.containers.find((c: Container) => c.id === item.containerID),
     getItemsForContainer: (state) => (containerId: string) =>
       state.items.filter((i) => i.containerID === containerId),
-    isLoadingStateNotLoaded: (state) =>
-      [LOADING_STATE.LOADING, LOADING_STATE.NOT_BEGUN].includes(state.loadingState),
+    isLoadingStateNotBegun: (state) => state.loadingState === LOADING_STATE.NOT_BEGUN,
+    isLoadingStateLoading: (state) => state.loadingState === LOADING_STATE.LOADING,
     isLoadingStateSuccess: (state) => state.loadingState === LOADING_STATE.SUCCESS,
     isLoadingStateError: (state) => state.loadingState === LOADING_STATE.ERROR,
     getRecentContainers:
@@ -91,6 +100,9 @@ export default createStore({
       containerDeleteAllowedRecursive(state, containerId),
   },
   mutations: {
+    updateUser(state, user) {
+      state.user = user;
+    },
     updateLocation(state, location) {
       state.location = location;
     },
@@ -116,8 +128,136 @@ export default createStore({
     setLoadingStateError(state) {
       state.loadingState = LOADING_STATE.ERROR;
     },
+    resetState(state) {
+      // Merge rather than replace so we don't lose observers
+      // https://github.com/vuejs/vuex/issues/1118
+      Object.assign(state, initialState);
+    },
   },
   actions: {
+    async resetApp({ commit }) {
+      dataStoreListener(); // Unsubscribe from DataStore
+      await DataStore.stop();
+      await DataStore.clear();
+      commit("resetState");
+      return;
+    },
+    async initUser({ commit, dispatch }): Promise<boolean> {
+      const tryUpdateUser = async () => {
+        try {
+          const user = await Auth.currentAuthenticatedUser();
+          commit("updateUser", user);
+          await dispatch("initDatastore");
+          return true;
+        } catch {
+          return false;
+        }
+      };
+
+      const listener: HubCallback = (data) => {
+        switch (data.payload.event) {
+          case "configured":
+            console.info("the Auth module is configured");
+            break;
+          case "signIn":
+            console.info("user signed in");
+            tryUpdateUser().then(() => router.push("/"));
+            break;
+          case "signIn_failure":
+            console.error("user sign in failed");
+            break;
+          case "signUp":
+            console.info("user signed up");
+            break;
+          case "signUp_failure":
+            console.error("user sign up failed");
+            break;
+          case "confirmSignUp":
+            console.info("user confirmation successful");
+            tryUpdateUser().then(() => router.push("/"));
+            break;
+          case "completeNewPassword_failure":
+            console.error("user did not complete new password flow");
+            break;
+          case "autoSignIn":
+            console.info("auto sign in successful");
+            tryUpdateUser().then(() => router.push("/"));
+            break;
+          case "autoSignIn_failure":
+            console.error("auto sign in failed");
+            break;
+          case "forgotPassword":
+            console.info("password recovery initiated");
+            break;
+          case "forgotPassword_failure":
+            console.error("password recovery failed");
+            break;
+          case "forgotPasswordSubmit":
+            console.info("password confirmation successful");
+            break;
+          case "forgotPasswordSubmit_failure":
+            console.error("password confirmation failed");
+            break;
+          case "tokenRefresh":
+            console.info("token refresh succeeded");
+            break;
+          case "tokenRefresh_failure":
+            console.error("token refresh failed");
+            break;
+          case "cognitoHostedUI":
+            console.info("Cognito Hosted UI sign in successful");
+            break;
+          case "cognitoHostedUI_failure":
+            console.error("Cognito Hosted UI sign in failed");
+            break;
+          case "customOAuthState":
+            console.info("custom state returned from CognitoHosted UI");
+            break;
+          case "customState_failure":
+            console.error("custom state failure");
+            break;
+          case "parsingCallbackUrl":
+            console.info("Cognito Hosted UI OAuth url parsing initiated");
+            break;
+          case "userDeleted":
+            console.info("user deletion successful");
+            break;
+          case "signOut":
+            console.info("user signed out");
+            dispatch("resetApp").then(() => router.push({ name: RouteNames.Login }));
+            break;
+        }
+      };
+
+      Hub.listen("auth", listener);
+      return tryUpdateUser();
+    },
+    async initDatastore({ commit, dispatch }) {
+      commit("setLoadingStateLoading");
+      await DataStore.clear();
+      await DataStore.start();
+
+      dataStoreListener(); // Unsubscribe from DataStore
+      dataStoreListener = Hub.listen("datastore", async (hubData) => {
+        const { event } = hubData.payload;
+        if (event === "ready") {
+          // all data models are synced from the cloud
+          DataStore.query(Location)
+            .then((locations) => {
+              if (locations.length === 0) {
+                throw new Error("No locations found");
+              }
+              dispatch("loadLocation", locations[0].id).then(() => {
+                commit("setLoadingStateSuccess");
+              });
+            })
+            .catch((err) => {
+              console.error(err);
+              commit("setLoadingStateError");
+            });
+        }
+      });
+    },
     async loadLocation({ commit, dispatch, state }, id) {
       const location = await DataStore.query(Location, id);
       commit("updateLocation", location);

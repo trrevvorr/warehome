@@ -7,11 +7,16 @@
         </n-icon>
       </template>
       <template #title>
-        {{ isLoadingStateSuccess ? location.name : "Loading..." }}
+        {{ isLoggedIn ? (isLoadingStateSuccess ? location.name : "Loading...") : "WareHome" }}
       </template>
       <template #extra>
-        <n-space>
-          <n-button strong @click="reloadData" :loading="isLoadingStateNotLoaded">
+        <n-space v-if="isLoggedIn">
+          <n-button strong @click="signOut">
+            <template #icon>
+              <n-icon><PersonArrowRight16Regular /></n-icon>
+            </template>
+          </n-button>
+          <n-button strong @click="reloadData" :loading="isLoadingStateLoading">
             <template #icon>
               <n-icon><ArrowClockwise12Regular /></n-icon>
             </template>
@@ -51,10 +56,12 @@ import { DataStore } from "@aws-amplify/datastore";
 import {
   ArrowClockwise12Regular,
   BoxMultipleSearch24Regular,
+  PersonArrowRight16Regular,
   BoxMultiple24Regular,
   Shapes24Regular,
 } from "@vicons/fluent";
 import { defineComponent } from "vue";
+import { Auth } from "aws-amplify";
 
 export default defineComponent({
   name: "RootView",
@@ -66,6 +73,7 @@ export default defineComponent({
     NButtonGroup,
     ArrowClockwise12Regular,
     BoxMultipleSearch24Regular,
+    PersonArrowRight16Regular,
     BoxMultiple24Regular,
     Shapes24Regular,
   },
@@ -75,7 +83,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapGetters(["location", "isLoadingStateNotLoaded", "isLoadingStateSuccess"]),
+    ...mapGetters(["location", "isLoadingStateLoading", "isLoadingStateSuccess", "isLoggedIn"]),
   },
   methods: {
     ...mapMutations(["setLoadingStateLoading"]),
@@ -84,6 +92,13 @@ export default defineComponent({
       await DataStore.clear();
       await DataStore.start();
       console.info("Reloaded data");
+    },
+    async signOut() {
+      try {
+        await Auth.signOut();
+      } catch (error) {
+        console.log("error signing out: ", error);
+      }
     },
   },
 });
