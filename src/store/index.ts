@@ -7,6 +7,7 @@ import { CognitoUser } from "@aws-amplify/auth";
 import { HubCallback } from "@aws-amplify/core";
 import router, { RouteNames } from "@/router";
 
+const LOCAL_STORAGE_LOCATION_KEY = "local_storage_location_key";
 enum LOADING_STATE {
   LOADING = "loading",
   SUCCESS = "success",
@@ -31,7 +32,7 @@ interface State {
 
 const initialState: State = {
   user: null,
-  activeLocationId: "",
+  activeLocationId: localStorage.getItem(LOCAL_STORAGE_LOCATION_KEY) || "",
   locations: [],
   locationSubscription: null,
   containers: [],
@@ -107,6 +108,7 @@ export default createStore({
       state.user = user;
     },
     updateActiveLocation(state, id) {
+      localStorage.setItem(LOCAL_STORAGE_LOCATION_KEY, id);
       state.activeLocationId = id;
     },
     updateLocations(state, locations) {
@@ -259,13 +261,14 @@ export default createStore({
         }
       });
     },
-    async syncLocations({ commit, dispatch, state }) {
+    async syncLocations({ commit, dispatch, state, getters }) {
       const locations = await DataStore.query(Location);
       commit("updateLocations", locations);
       if (locations.length == 0) {
         throw new Error("No locations found");
       }
-      await dispatch("changeLocation", locations[0].id);
+      const locationId = getters.location?.id || locations[0].id;
+      await dispatch("changeLocation", locationId);
 
       if (state.locationSubscription) {
         state.locationSubscription.unsubscribe();
