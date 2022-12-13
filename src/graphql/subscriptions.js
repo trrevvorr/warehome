@@ -2,8 +2,11 @@
 // this is an auto generated file. This will be overwritten
 
 export const onCreateItem = /* GraphQL */ `
-  subscription OnCreateItem($filter: ModelSubscriptionItemFilterInput) {
-    onCreateItem(filter: $filter) {
+  subscription OnCreateItem(
+    $filter: ModelSubscriptionItemFilterInput
+    $owner: String
+  ) {
+    onCreateItem(filter: $filter, owner: $owner) {
       id
       name
       locationID
@@ -13,12 +16,16 @@ export const onCreateItem = /* GraphQL */ `
       _version
       _deleted
       _lastChangedAt
+      owner
     }
   }
 `;
 export const onUpdateItem = /* GraphQL */ `
-  subscription OnUpdateItem($filter: ModelSubscriptionItemFilterInput) {
-    onUpdateItem(filter: $filter) {
+  subscription OnUpdateItem(
+    $filter: ModelSubscriptionItemFilterInput
+    $owner: String
+  ) {
+    onUpdateItem(filter: $filter, owner: $owner) {
       id
       name
       locationID
@@ -28,12 +35,16 @@ export const onUpdateItem = /* GraphQL */ `
       _version
       _deleted
       _lastChangedAt
+      owner
     }
   }
 `;
 export const onDeleteItem = /* GraphQL */ `
-  subscription OnDeleteItem($filter: ModelSubscriptionItemFilterInput) {
-    onDeleteItem(filter: $filter) {
+  subscription OnDeleteItem(
+    $filter: ModelSubscriptionItemFilterInput
+    $owner: String
+  ) {
+    onDeleteItem(filter: $filter, owner: $owner) {
       id
       name
       locationID
@@ -43,14 +54,16 @@ export const onDeleteItem = /* GraphQL */ `
       _version
       _deleted
       _lastChangedAt
+      owner
     }
   }
 `;
 export const onCreateContainer = /* GraphQL */ `
   subscription OnCreateContainer(
     $filter: ModelSubscriptionContainerFilterInput
+    $owner: String
   ) {
-    onCreateContainer(filter: $filter) {
+    onCreateContainer(filter: $filter, owner: $owner) {
       id
       name
       Items {
@@ -64,6 +77,7 @@ export const onCreateContainer = /* GraphQL */ `
           _version
           _deleted
           _lastChangedAt
+          owner
         }
         nextToken
         startedAt
@@ -89,6 +103,7 @@ export const onCreateContainer = /* GraphQL */ `
           _version
           _deleted
           _lastChangedAt
+          owner
         }
         nextToken
         startedAt
@@ -98,14 +113,16 @@ export const onCreateContainer = /* GraphQL */ `
       _version
       _deleted
       _lastChangedAt
+      owner
     }
   }
 `;
 export const onUpdateContainer = /* GraphQL */ `
   subscription OnUpdateContainer(
     $filter: ModelSubscriptionContainerFilterInput
+    $owner: String
   ) {
-    onUpdateContainer(filter: $filter) {
+    onUpdateContainer(filter: $filter, owner: $owner) {
       id
       name
       Items {
@@ -119,6 +136,7 @@ export const onUpdateContainer = /* GraphQL */ `
           _version
           _deleted
           _lastChangedAt
+          owner
         }
         nextToken
         startedAt
@@ -144,6 +162,7 @@ export const onUpdateContainer = /* GraphQL */ `
           _version
           _deleted
           _lastChangedAt
+          owner
         }
         nextToken
         startedAt
@@ -153,14 +172,16 @@ export const onUpdateContainer = /* GraphQL */ `
       _version
       _deleted
       _lastChangedAt
+      owner
     }
   }
 `;
 export const onDeleteContainer = /* GraphQL */ `
   subscription OnDeleteContainer(
     $filter: ModelSubscriptionContainerFilterInput
+    $owner: String
   ) {
-    onDeleteContainer(filter: $filter) {
+    onDeleteContainer(filter: $filter, owner: $owner) {
       id
       name
       Items {
@@ -174,6 +195,7 @@ export const onDeleteContainer = /* GraphQL */ `
           _version
           _deleted
           _lastChangedAt
+          owner
         }
         nextToken
         startedAt
@@ -199,6 +221,7 @@ export const onDeleteContainer = /* GraphQL */ `
           _version
           _deleted
           _lastChangedAt
+          owner
         }
         nextToken
         startedAt
@@ -208,12 +231,16 @@ export const onDeleteContainer = /* GraphQL */ `
       _version
       _deleted
       _lastChangedAt
+      owner
     }
   }
 `;
 export const onCreateLocation = /* GraphQL */ `
-  subscription OnCreateLocation($filter: ModelSubscriptionLocationFilterInput) {
-    onCreateLocation(filter: $filter) {
+  subscription OnCreateLocation(
+    $filter: ModelSubscriptionLocationFilterInput
+    $owner: String
+  ) {
+    onCreateLocation(filter: $filter, owner: $owner) {
       id
       name
       Containers {
@@ -235,6 +262,7 @@ export const onCreateLocation = /* GraphQL */ `
           _version
           _deleted
           _lastChangedAt
+          owner
         }
         nextToken
         startedAt
@@ -250,6 +278,7 @@ export const onCreateLocation = /* GraphQL */ `
           _version
           _deleted
           _lastChangedAt
+          owner
         }
         nextToken
         startedAt
@@ -259,12 +288,16 @@ export const onCreateLocation = /* GraphQL */ `
       _version
       _deleted
       _lastChangedAt
+      owner
     }
   }
 `;
 export const onUpdateLocation = /* GraphQL */ `
-  subscription OnUpdateLocation($filter: ModelSubscriptionLocationFilterInput) {
-    onUpdateLocation(filter: $filter) {
+  subscription OnUpdateLocation(
+    $filter: ModelSubscriptionLocationFilterInput
+    $owner: String
+  ) {
+    onUpdateLocation(filter: $filter, owner: $owner) {
       id
       name
       Containers {
@@ -286,6 +319,7 @@ export const onUpdateLocation = /* GraphQL */ `
           _version
           _deleted
           _lastChangedAt
+          owner
         }
         nextToken
         startedAt
@@ -301,6 +335,7 @@ export const onUpdateLocation = /* GraphQL */ `
           _version
           _deleted
           _lastChangedAt
+          owner
         }
         nextToken
         startedAt
@@ -310,12 +345,16 @@ export const onUpdateLocation = /* GraphQL */ `
       _version
       _deleted
       _lastChangedAt
+      owner
     }
   }
 `;
 export const onDeleteLocation = /* GraphQL */ `
-  subscription OnDeleteLocation($filter: ModelSubscriptionLocationFilterInput) {
-    onDeleteLocation(filter: $filter) {
+  subscription OnDeleteLocation(
+    $filter: ModelSubscriptionLocationFilterInput
+    $owner: String
+  ) {
+    onDeleteLocation(filter: $filter, owner: $owner) {
       id
       name
       Containers {
@@ -337,6 +376,7 @@ export const onDeleteLocation = /* GraphQL */ `
           _version
           _deleted
           _lastChangedAt
+          owner
         }
         nextToken
         startedAt
@@ -352,6 +392,7 @@ export const onDeleteLocation = /* GraphQL */ `
           _version
           _deleted
           _lastChangedAt
+          owner
         }
         nextToken
         startedAt
@@ -361,6 +402,7 @@ export const onDeleteLocation = /* GraphQL */ `
       _version
       _deleted
       _lastChangedAt
+      owner
     }
   }
 `;

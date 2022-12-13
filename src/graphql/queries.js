@@ -13,6 +13,7 @@ export const getItem = /* GraphQL */ `
       _version
       _deleted
       _lastChangedAt
+      owner
     }
   }
 `;
@@ -33,6 +34,7 @@ export const listItems = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
+        owner
       }
       nextToken
       startedAt
@@ -62,6 +64,7 @@ export const syncItems = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
+        owner
       }
       nextToken
       startedAt
@@ -93,6 +96,7 @@ export const itemsByLocationID = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
+        owner
       }
       nextToken
       startedAt
@@ -124,6 +128,7 @@ export const itemsByContainerID = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
+        owner
       }
       nextToken
       startedAt
@@ -146,6 +151,7 @@ export const getContainer = /* GraphQL */ `
           _version
           _deleted
           _lastChangedAt
+          owner
         }
         nextToken
         startedAt
@@ -171,6 +177,7 @@ export const getContainer = /* GraphQL */ `
           _version
           _deleted
           _lastChangedAt
+          owner
         }
         nextToken
         startedAt
@@ -180,6 +187,7 @@ export const getContainer = /* GraphQL */ `
       _version
       _deleted
       _lastChangedAt
+      owner
     }
   }
 `;
@@ -204,6 +212,7 @@ export const listContainers = /* GraphQL */ `
             _version
             _deleted
             _lastChangedAt
+            owner
           }
           nextToken
           startedAt
@@ -221,6 +230,7 @@ export const listContainers = /* GraphQL */ `
             _version
             _deleted
             _lastChangedAt
+            owner
           }
           nextToken
           startedAt
@@ -230,6 +240,7 @@ export const listContainers = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
+        owner
       }
       nextToken
       startedAt
@@ -263,6 +274,7 @@ export const syncContainers = /* GraphQL */ `
             _version
             _deleted
             _lastChangedAt
+            owner
           }
           nextToken
           startedAt
@@ -280,6 +292,7 @@ export const syncContainers = /* GraphQL */ `
             _version
             _deleted
             _lastChangedAt
+            owner
           }
           nextToken
           startedAt
@@ -289,6 +302,7 @@ export const syncContainers = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
+        owner
       }
       nextToken
       startedAt
@@ -324,6 +338,7 @@ export const containersByLocationID = /* GraphQL */ `
             _version
             _deleted
             _lastChangedAt
+            owner
           }
           nextToken
           startedAt
@@ -341,6 +356,7 @@ export const containersByLocationID = /* GraphQL */ `
             _version
             _deleted
             _lastChangedAt
+            owner
           }
           nextToken
           startedAt
@@ -350,6 +366,7 @@ export const containersByLocationID = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
+        owner
       }
       nextToken
       startedAt
@@ -385,6 +402,7 @@ export const containersByParentContainerID = /* GraphQL */ `
             _version
             _deleted
             _lastChangedAt
+            owner
           }
           nextToken
           startedAt
@@ -402,6 +420,7 @@ export const containersByParentContainerID = /* GraphQL */ `
             _version
             _deleted
             _lastChangedAt
+            owner
           }
           nextToken
           startedAt
@@ -411,6 +430,7 @@ export const containersByParentContainerID = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
+        owner
       }
       nextToken
       startedAt
@@ -441,6 +461,7 @@ export const getLocation = /* GraphQL */ `
           _version
           _deleted
           _lastChangedAt
+          owner
         }
         nextToken
         startedAt
@@ -456,6 +477,7 @@ export const getLocation = /* GraphQL */ `
           _version
           _deleted
           _lastChangedAt
+          owner
         }
         nextToken
         startedAt
@@ -465,6 +487,7 @@ export const getLocation = /* GraphQL */ `
       _version
       _deleted
       _lastChangedAt
+      owner
     }
   }
 `;
@@ -489,6 +512,7 @@ export const listLocations = /* GraphQL */ `
             _version
             _deleted
             _lastChangedAt
+            owner
           }
           nextToken
           startedAt
@@ -504,6 +528,7 @@ export const listLocations = /* GraphQL */ `
             _version
             _deleted
             _lastChangedAt
+            owner
           }
           nextToken
           startedAt
@@ -513,6 +538,7 @@ export const listLocations = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
+        owner
       }
       nextToken
       startedAt
@@ -546,6 +572,7 @@ export const syncLocations = /* GraphQL */ `
             _version
             _deleted
             _lastChangedAt
+            owner
           }
           nextToken
           startedAt
@@ -561,6 +588,7 @@ export const syncLocations = /* GraphQL */ `
             _version
             _deleted
             _lastChangedAt
+            owner
           }
           nextToken
           startedAt
@@ -570,6 +598,7 @@ export const syncLocations = /* GraphQL */ `
         _version
         _deleted
         _lastChangedAt
+        owner
       }
       nextToken
       startedAt
