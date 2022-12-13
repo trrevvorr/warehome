@@ -18,7 +18,8 @@ let dataStoreListener: () => void = () => {};
 
 interface State {
   user: CognitoUser | null;
-  location: Location | null;
+  activeLocationId: string;
+  locations: Location[];
   locationSubscription: ZenObservable.Subscription | null;
   containers: Container[];
   containerSubscription: ZenObservable.Subscription | null;
@@ -30,7 +31,8 @@ interface State {
 
 const initialState: State = {
   user: null,
-  location: null,
+  activeLocationId: "",
+  locations: [],
   locationSubscription: null,
   containers: [],
   containerSubscription: null,
@@ -46,7 +48,8 @@ export default createStore({
     isLoggedIn: (state) => !!state.user,
     containers: (state) => state.containers,
     items: (state) => state.items,
-    location: (state) => state.location,
+    locations: (state) => state.locations,
+    location: (state) => state.locations.find((l) => l.id === state.activeLocationId),
     getChildrenForContainer: (state) => (containerId: string) =>
       childrenForContainer(state, containerId, true),
     getAncestorsForContainer: (state) => (container: Container) =>
@@ -103,8 +106,11 @@ export default createStore({
     updateUser(state, user) {
       state.user = user;
     },
-    updateLocation(state, location) {
-      state.location = location;
+    updateActiveLocation(state, id) {
+      state.activeLocationId = id;
+    },
+    updateLocations(state, locations) {
+      state.locations = locations.sort((a: Location, b: Location) => a.name.localeCompare(b.name));
     },
     updateContainers(state, containers) {
       state.containers = containers.sort((a: Container, b: Container) =>
@@ -157,73 +163,73 @@ export default createStore({
       const listener: HubCallback = (data) => {
         switch (data.payload.event) {
           case "configured":
-            console.info("the Auth module is configured");
+            console.debug("the Auth module is configured");
             break;
           case "signIn":
-            console.info("user signed in");
+            console.debug("user signed in");
             tryUpdateUser().then(() => router.push("/"));
             break;
           case "signIn_failure":
             console.error("user sign in failed");
             break;
           case "signUp":
-            console.info("user signed up");
+            console.debug("user signed up");
             break;
           case "signUp_failure":
             console.error("user sign up failed");
             break;
           case "confirmSignUp":
-            console.info("user confirmation successful");
+            console.debug("user confirmation successful");
             tryUpdateUser().then(() => router.push("/"));
             break;
           case "completeNewPassword_failure":
             console.error("user did not complete new password flow");
             break;
           case "autoSignIn":
-            console.info("auto sign in successful");
+            console.debug("auto sign in successful");
             tryUpdateUser().then(() => router.push("/"));
             break;
           case "autoSignIn_failure":
             console.error("auto sign in failed");
             break;
           case "forgotPassword":
-            console.info("password recovery initiated");
+            console.debug("password recovery initiated");
             break;
           case "forgotPassword_failure":
             console.error("password recovery failed");
             break;
           case "forgotPasswordSubmit":
-            console.info("password confirmation successful");
+            console.debug("password confirmation successful");
             break;
           case "forgotPasswordSubmit_failure":
             console.error("password confirmation failed");
             break;
           case "tokenRefresh":
-            console.info("token refresh succeeded");
+            console.debug("token refresh succeeded");
             break;
           case "tokenRefresh_failure":
             console.error("token refresh failed");
             break;
           case "cognitoHostedUI":
-            console.info("Cognito Hosted UI sign in successful");
+            console.debug("Cognito Hosted UI sign in successful");
             break;
           case "cognitoHostedUI_failure":
             console.error("Cognito Hosted UI sign in failed");
             break;
           case "customOAuthState":
-            console.info("custom state returned from CognitoHosted UI");
+            console.debug("custom state returned from CognitoHosted UI");
             break;
           case "customState_failure":
             console.error("custom state failure");
             break;
           case "parsingCallbackUrl":
-            console.info("Cognito Hosted UI OAuth url parsing initiated");
+            console.debug("Cognito Hosted UI OAuth url parsing initiated");
             break;
           case "userDeleted":
-            console.info("user deletion successful");
+            console.debug("user deletion successful");
             break;
           case "signOut":
-            console.info("user signed out");
+            console.debug("user signed out");
             dispatch("resetApp").then(() => router.push({ name: RouteNames.Login }));
             break;
         }
@@ -232,7 +238,7 @@ export default createStore({
       Hub.listen("auth", listener);
       return tryUpdateUser();
     },
-    async initDatastore({ commit, dispatch }) {
+    async initDatastore({ commit, dispatch, getters }) {
       commit("setLoadingStateLoading");
       await DataStore.clear();
       await DataStore.start();
@@ -242,14 +248,9 @@ export default createStore({
         const { event } = hubData.payload;
         if (event === "ready") {
           // all data models are synced from the cloud
-          DataStore.query(Location)
-            .then((locations) => {
-              if (locations.length === 0) {
-                throw new Error("No locations found");
-              }
-              dispatch("loadLocation", locations[0].id).then(() => {
-                commit("setLoadingStateSuccess");
-              });
+          await dispatch("syncLocations")
+            .then(() => {
+              commit("setLoadingStateSuccess");
             })
             .catch((err) => {
               console.error(err);
@@ -258,27 +259,56 @@ export default createStore({
         }
       });
     },
-    async loadLocation({ commit, dispatch, state }, id) {
-      const location = await DataStore.query(Location, id);
-      commit("updateLocation", location);
-      await dispatch("syncContainers").then(() => dispatch("syncItems"));
+    async syncLocations({ commit, dispatch, state }) {
+      const locations = await DataStore.query(Location);
+      commit("updateLocations", locations);
+      if (locations.length == 0) {
+        throw new Error("No locations found");
+      }
+      await dispatch("changeLocation", locations[0].id);
 
       if (state.locationSubscription) {
         state.locationSubscription.unsubscribe();
       }
-      state.locationSubscription = DataStore.observe(Location, id).subscribe((msg) => {
+      state.locationSubscription = DataStore.observe(Location).subscribe((msg) => {
         console.debug(
           `Location subscription ${msg.opType}: ${msg.element.name} - ${msg.element.id}`
         );
-        if (msg.opType === "UPDATE") {
-          commit("updateLocation", msg.element);
-        } else {
-          console.warn("Unexpected operation type on location: " + msg.opType);
+        switch (msg.opType) {
+          case "INSERT":
+            commit("updateLocations", [
+              ...state.locations.filter((c) => c.id !== msg.element.id),
+              msg.element,
+            ]);
+            break;
+          case "UPDATE":
+            commit("updateLocations", [
+              ...state.locations.filter((c) => c.id !== msg.element.id),
+              msg.element,
+            ]);
+            break;
+          case "DELETE":
+            commit("updateLocations", [...state.locations.filter((c) => c.id !== msg.element.id)]);
+            break;
+          default:
+            console.warn("Unexpected operation type on location: " + msg.opType);
         }
       });
     },
-    async syncContainers({ commit, state }) {
-      const location = assertLocation(state.location);
+    async changeLocation({ commit, dispatch, state }, locationId) {
+      if (state.activeLocationId === locationId) {
+        console.warn("Location already active");
+        return;
+      }
+      if (!state.locations.find((l) => l.id === locationId)) {
+        throw new Error("Location not found");
+      }
+      commit("updateActiveLocation", locationId);
+      await dispatch("syncContainers");
+      await dispatch("syncItems");
+    },
+    async syncContainers({ commit, state, getters }) {
+      const location = assertLocation(getters.location);
       const containers = await DataStore.query(Container, (c) => c.locationID.eq(location.id));
       commit("updateContainers", containers);
 
@@ -314,8 +344,8 @@ export default createStore({
         }
       });
     },
-    async syncItems({ commit, state }) {
-      const location = assertLocation(state.location);
+    async syncItems({ commit, state, getters }) {
+      const location = assertLocation(getters.location);
       const items = await DataStore.query(Item, (c) => c.locationID.eq(location.id));
       commit("updateItems", items);
 
@@ -347,8 +377,8 @@ export default createStore({
         }
       });
     },
-    async addContainer({ commit, state }, input) {
-      const location = assertLocation(state.location);
+    async addContainer({ commit, state, getters }, input) {
+      const location = assertLocation(getters.location);
       const container = new Container({
         name: input.name,
         locationID: location.id,
@@ -359,8 +389,16 @@ export default createStore({
         commit("updateContainers", [...state.containers, container]);
       });
     },
-    async addItem({ commit, state }, input) {
-      const location = assertLocation(state.location);
+    async addLocation({ commit, state }, input) {
+      const location = new Location({
+        name: input.name,
+      });
+      await DataStore.save(location).then(() => {
+        commit("updateLocations", [...state.locations, location]);
+      });
+    },
+    async addItem({ commit, state, getters }, input) {
+      const location = assertLocation(getters.location);
       const item = new Item({
         name: input.name,
         locationID: location.id,
@@ -381,6 +419,21 @@ export default createStore({
             commit("updateContainers", [
               ...state.containers.filter((c) => c.id !== input.id),
               newContainer,
+            ]);
+          });
+        }
+      });
+    },
+    async updateLocation({ commit, state }, input) {
+      await DataStore.query(Location, input.id).then(async (originalLocation) => {
+        if (originalLocation) {
+          const newLocation = Location.copyOf(originalLocation, (updated) => {
+            updated.name = input.name;
+          });
+          await DataStore.save(newLocation).then(() => {
+            commit("updateLocations", [
+              ...state.locations.filter((i) => i.id !== input.id),
+              newLocation,
             ]);
           });
         }

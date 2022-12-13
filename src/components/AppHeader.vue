@@ -25,8 +25,17 @@
             <n-button-group>
               <n-button
                 strong
-                @click="$router.push({ name: 'containers' })"
-                :type="$route.name?.toString() === 'containers' ? 'primary' : 'tertiary'"
+                @click="$router.push({ name: RouteNames.Locations })"
+                :type="$route.name?.toString() === RouteNames.Locations ? 'primary' : 'tertiary'"
+              >
+                <template #icon>
+                  <n-icon><Globe16Regular /></n-icon>
+                </template>
+              </n-button>
+              <n-button
+                strong
+                @click="$router.push({ name: RouteNames.Containers })"
+                :type="$route.name?.toString() === RouteNames.Containers ? 'primary' : 'tertiary'"
               >
                 <template #icon>
                   <n-icon><BoxMultiple24Regular /></n-icon>
@@ -34,8 +43,8 @@
               </n-button>
               <n-button
                 strong
-                @click="$router.push({ name: 'items' })"
-                :type="$route.name?.toString() === 'items' ? 'primary' : 'tertiary'"
+                @click="$router.push({ name: RouteNames.Items })"
+                :type="$route.name?.toString() === RouteNames.Items ? 'primary' : 'tertiary'"
               >
                 <template #icon>
                   <n-icon><Shapes24Regular /></n-icon>
@@ -59,9 +68,11 @@ import {
   PersonArrowRight16Regular,
   BoxMultiple24Regular,
   Shapes24Regular,
+  Globe16Regular,
 } from "@vicons/fluent";
 import { defineComponent } from "vue";
 import { Auth } from "aws-amplify";
+import { RouteNames } from "@/router";
 
 export default defineComponent({
   name: "RootView",
@@ -76,10 +87,12 @@ export default defineComponent({
     PersonArrowRight16Regular,
     BoxMultiple24Regular,
     Shapes24Regular,
+    Globe16Regular,
   },
   data() {
     return {
       loadingBar: () => {},
+      RouteNames,
     };
   },
   computed: {

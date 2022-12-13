@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import ItemForm from "../views/ItemForm.vue";
 import ContainerForm from "../views/ContainerForm.vue";
+import LocationForm from "../views/LocationForm.vue";
 import LoginSignUp from "../views/LoginSignUp.vue";
 import { Auth } from "aws-amplify";
 
@@ -8,6 +9,7 @@ export enum RouteNames {
   Login = "login",
   Items = "items",
   Containers = "containers",
+  Locations = "locations",
 }
 
 const routes = [
@@ -31,6 +33,11 @@ const routes = [
     path: "/containers",
     name: RouteNames.Containers,
     component: ContainerForm,
+  },
+  {
+    path: "/locations",
+    name: RouteNames.Locations,
+    component: LocationForm,
   },
 ];
 
