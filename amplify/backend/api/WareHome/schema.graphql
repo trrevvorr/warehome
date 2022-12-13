@@ -1,11 +1,11 @@
-type Item @model @auth(rules: [{ allow: public }]) {
+type Item @model @auth(rules: [{allow: public}]) {
   id: ID!
   name: String!
   locationID: ID! @index(name: "byLocation")
   containerID: ID @index(name: "byContainer")
 }
 
-type Container @model @auth(rules: [{ allow: public }]) {
+type Container @model @auth(rules: [{allow: public}]) {
   id: ID!
   name: String!
   Items: [Item] @hasMany(indexName: "byContainer", fields: ["id"])
@@ -14,9 +14,10 @@ type Container @model @auth(rules: [{ allow: public }]) {
   Containers: [Container] @hasMany(indexName: "byParentContainer", fields: ["id"])
 }
 
-type Location @model @auth(rules: [{ allow: public }]) {
+type Location @model @auth(rules: [{allow: public}]) {
   id: ID!
   name: String!
   Containers: [Container] @hasMany(indexName: "byLocation", fields: ["id"])
   Items: [Item] @hasMany(indexName: "byLocation", fields: ["id"])
 }
+ 

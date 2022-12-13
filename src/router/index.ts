@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import ItemForm from "../views/ItemForm.vue";
 import ContainerForm from "../views/ContainerForm.vue";
+import LoginSignUp from "../views/LoginSignUp.vue";
 
 const routes = [
   {
@@ -8,6 +9,11 @@ const routes = [
     redirect: () => {
       return "/items";
     },
+  },
+  {
+    path: "/login",
+    name: "login",
+    component: LoginSignUp,
   },
   {
     path: "/items",

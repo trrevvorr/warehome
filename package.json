@@ -11,7 +11,8 @@
     "amplify-push": "node amplify/scripts/amplify-push.js"
   },
   "dependencies": {
-    "aws-amplify": "^5.0.4",
+    "@aws-amplify/ui-vue": "^3.0.4",
+    "aws-amplify": "^5.0.5",
     "core-js": "^3.8.3",
     "register-service-worker": "^1.7.2",
     "vue": "^3.2.13",
