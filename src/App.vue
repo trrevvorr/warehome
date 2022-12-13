@@ -9,6 +9,7 @@
             <div id="root">
               <root-view />
             </div>
+            <app-footer />
           </div>
         </n-loading-bar-provider>
       </n-message-provider>
@@ -28,6 +29,7 @@ import RootView from "./views/RootView.vue";
 import { mapActions } from "vuex";
 import { darkTheme } from "naive-ui";
 import AppHeader from "./components/AppHeader.vue";
+import AppFooter from "./components/AppFooter.vue";
 import { defineComponent } from "vue";
 
 export default defineComponent({
@@ -40,6 +42,7 @@ export default defineComponent({
     NGlobalStyle,
     RootView,
     AppHeader,
+    AppFooter,
   },
   data: () => ({
     listener: () => {},
@@ -65,7 +68,7 @@ export default defineComponent({
 
 #wrapper {
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto 1fr auto;
   height: 100vh;
 }
 
@@ -76,6 +79,7 @@ export default defineComponent({
   overflow-y: scroll;
   padding-top: 1rem;
   padding-bottom: 3rem;
+  position: relative;
 }
 
 .n-h {

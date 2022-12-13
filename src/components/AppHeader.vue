@@ -10,89 +10,62 @@
         {{ isLoggedIn ? (isLoadingStateSuccess ? location.name : "Loading...") : "WareHome" }}
       </template>
       <template #extra>
-        <n-space v-if="isLoggedIn">
-          <n-button strong @click="signOut">
-            <template #icon>
-              <n-icon><PersonArrowRight16Regular /></n-icon>
-            </template>
+        <n-dropdown trigger="hover" :options="options" @select="handleSelect">
+          <n-button text style="font-size: 25px; margin-top: 6px">
+            <n-icon><MoreVertical20Filled /></n-icon>
           </n-button>
-          <n-button strong @click="reloadData" :loading="isLoadingStateLoading">
-            <template #icon>
-              <n-icon><ArrowClockwise12Regular /></n-icon>
-            </template>
-          </n-button>
-          <div class="nav">
-            <n-button-group>
-              <n-button
-                strong
-                @click="$router.push({ name: RouteNames.Locations })"
-                :type="$route.name?.toString() === RouteNames.Locations ? 'primary' : 'tertiary'"
-              >
-                <template #icon>
-                  <n-icon><Globe16Regular /></n-icon>
-                </template>
-              </n-button>
-              <n-button
-                strong
-                @click="$router.push({ name: RouteNames.Containers })"
-                :type="$route.name?.toString() === RouteNames.Containers ? 'primary' : 'tertiary'"
-              >
-                <template #icon>
-                  <n-icon><BoxMultiple24Regular /></n-icon>
-                </template>
-              </n-button>
-              <n-button
-                strong
-                @click="$router.push({ name: RouteNames.Items })"
-                :type="$route.name?.toString() === RouteNames.Items ? 'primary' : 'tertiary'"
-              >
-                <template #icon>
-                  <n-icon><Shapes24Regular /></n-icon>
-                </template>
-              </n-button>
-            </n-button-group>
-          </div>
-        </n-space>
+        </n-dropdown>
       </template>
     </n-page-header>
   </div>
 </template>
 
 <script lang="ts">
-import { mapGetters, mapMutations } from "vuex";
-import { NButton, NIcon, NSpace, NPageHeader, NButtonGroup } from "naive-ui";
-import { DataStore } from "@aws-amplify/datastore";
+import { mapActions, mapGetters, mapMutations } from "vuex";
+import { DropdownOption, NButton, NIcon, NDropdown, NPageHeader } from "naive-ui";
 import {
   ArrowClockwise12Regular,
   BoxMultipleSearch24Regular,
   PersonArrowRight16Regular,
-  BoxMultiple24Regular,
-  Shapes24Regular,
-  Globe16Regular,
+  MoreVertical20Filled,
 } from "@vicons/fluent";
-import { defineComponent } from "vue";
+import { defineComponent, h, Component } from "vue";
 import { Auth } from "aws-amplify";
-import { RouteNames } from "@/router";
+
+const MenuKeys = Object.freeze({
+  Refresh: "refresh",
+  Logout: "logout",
+});
+
+function renderIcon(icon: Component) {
+  return () => h(NIcon, null, { default: () => h(icon) });
+}
 
 export default defineComponent({
   name: "RootView",
   components: {
     NButton,
     NIcon,
-    NSpace,
+    NDropdown,
     NPageHeader,
-    NButtonGroup,
-    ArrowClockwise12Regular,
     BoxMultipleSearch24Regular,
-    PersonArrowRight16Regular,
-    BoxMultiple24Regular,
-    Shapes24Regular,
-    Globe16Regular,
+    MoreVertical20Filled,
   },
   data() {
     return {
       loadingBar: () => {},
-      RouteNames,
+      options: [
+        {
+          label: "Refresh",
+          key: MenuKeys.Refresh,
+          icon: renderIcon(ArrowClockwise12Regular),
+        },
+        {
+          label: "Log Out",
+          key: MenuKeys.Logout,
+          icon: renderIcon(PersonArrowRight16Regular),
+        },
+      ] as DropdownOption[],
     };
   },
   computed: {
@@ -100,17 +73,25 @@ export default defineComponent({
   },
   methods: {
     ...mapMutations(["setLoadingStateLoading"]),
+    ...mapActions(["initDatastore"]),
     async reloadData() {
-      this.setLoadingStateLoading();
-      await DataStore.clear();
-      await DataStore.start();
-      console.info("Reloaded data");
+      await this.initDatastore();
     },
     async signOut() {
       try {
         await Auth.signOut();
       } catch (error) {
         console.log("error signing out: ", error);
+      }
+    },
+    handleSelect(key: string) {
+      switch (key) {
+        case MenuKeys.Refresh:
+          this.reloadData();
+          break;
+        case MenuKeys.Logout:
+          this.signOut();
+          break;
       }
     },
   },

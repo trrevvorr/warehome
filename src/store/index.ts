@@ -163,75 +163,45 @@ export default createStore({
       };
 
       const listener: HubCallback = (data) => {
+        console.debug("auth event", data.payload.event);
         switch (data.payload.event) {
-          case "configured":
-            console.debug("the Auth module is configured");
-            break;
           case "signIn":
-            console.debug("user signed in");
             tryUpdateUser().then(() => router.push("/"));
             break;
           case "signIn_failure":
             console.error("user sign in failed");
             break;
-          case "signUp":
-            console.debug("user signed up");
-            break;
           case "signUp_failure":
             console.error("user sign up failed");
             break;
           case "confirmSignUp":
-            console.debug("user confirmation successful");
             tryUpdateUser().then(() => router.push("/"));
             break;
           case "completeNewPassword_failure":
             console.error("user did not complete new password flow");
             break;
           case "autoSignIn":
-            console.debug("auto sign in successful");
             tryUpdateUser().then(() => router.push("/"));
             break;
           case "autoSignIn_failure":
             console.error("auto sign in failed");
             break;
-          case "forgotPassword":
-            console.debug("password recovery initiated");
-            break;
           case "forgotPassword_failure":
             console.error("password recovery failed");
-            break;
-          case "forgotPasswordSubmit":
-            console.debug("password confirmation successful");
             break;
           case "forgotPasswordSubmit_failure":
             console.error("password confirmation failed");
             break;
-          case "tokenRefresh":
-            console.debug("token refresh succeeded");
-            break;
           case "tokenRefresh_failure":
             console.error("token refresh failed");
-            break;
-          case "cognitoHostedUI":
-            console.debug("Cognito Hosted UI sign in successful");
             break;
           case "cognitoHostedUI_failure":
             console.error("Cognito Hosted UI sign in failed");
             break;
-          case "customOAuthState":
-            console.debug("custom state returned from CognitoHosted UI");
-            break;
           case "customState_failure":
             console.error("custom state failure");
             break;
-          case "parsingCallbackUrl":
-            console.debug("Cognito Hosted UI OAuth url parsing initiated");
-            break;
-          case "userDeleted":
-            console.debug("user deletion successful");
-            break;
           case "signOut":
-            console.debug("user signed out");
             dispatch("resetApp").then(() => router.push({ name: RouteNames.Login }));
             break;
         }
@@ -248,6 +218,7 @@ export default createStore({
       dataStoreListener(); // Unsubscribe from DataStore
       dataStoreListener = Hub.listen("datastore", async (hubData) => {
         const { event } = hubData.payload;
+        console.debug("datastore event", event);
         if (event === "ready") {
           // all data models are synced from the cloud
           await dispatch("syncLocations")
@@ -299,14 +270,11 @@ export default createStore({
       });
     },
     async changeLocation({ commit, dispatch, state }, locationId) {
-      if (state.activeLocationId === locationId) {
-        console.warn("Location already active");
-        return;
-      }
       if (!state.locations.find((l) => l.id === locationId)) {
         throw new Error("Location not found");
       }
       commit("updateActiveLocation", locationId);
+
       await dispatch("syncContainers");
       await dispatch("syncItems");
     },
