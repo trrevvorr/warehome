@@ -92,4 +92,8 @@ export default defineComponent({
   z-index: 999;
   border-top: 1px solid rgba(255, 255, 255, 0.24);
 }
+
+#app-footer .n-button {
+  height: 3rem;
+}
 </style>

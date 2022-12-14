@@ -7,14 +7,20 @@
         </n-icon>
       </template>
       <template #title>
-        {{ isLoggedIn ? (isLoadingStateSuccess ? location.name : "Loading...") : "WareHome" }}
+        <div class="header-title">
+          <n-ellipsis :line-clamp="1">
+            {{ isLoggedIn ? (isLoadingStateSuccess ? location.name : "Loading...") : "WareHome" }}
+          </n-ellipsis>
+        </div>
       </template>
       <template #extra>
-        <n-dropdown trigger="hover" :options="options" @select="handleSelect">
-          <n-button text style="font-size: 25px; margin-top: 6px">
-            <n-icon><MoreVertical20Filled /></n-icon>
-          </n-button>
-        </n-dropdown>
+        <div class="header-menu">
+          <n-dropdown trigger="hover" :options="options" @select="handleSelect">
+            <n-button text style="font-size: 25px">
+              <n-icon><MoreVertical20Filled /></n-icon>
+            </n-button>
+          </n-dropdown>
+        </div>
       </template>
     </n-page-header>
   </div>
@@ -22,7 +28,7 @@
 
 <script lang="ts">
 import { mapActions, mapGetters, mapMutations } from "vuex";
-import { DropdownOption, NButton, NIcon, NDropdown, NPageHeader } from "naive-ui";
+import { DropdownOption, NButton, NEllipsis, NIcon, NDropdown, NPageHeader } from "naive-ui";
 import {
   ArrowClockwise12Regular,
   BoxMultipleSearch24Regular,
@@ -45,6 +51,7 @@ export default defineComponent({
   name: "RootView",
   components: {
     NButton,
+    NEllipsis,
     NIcon,
     NDropdown,
     NPageHeader,
@@ -103,5 +110,9 @@ export default defineComponent({
   padding: 0.5rem;
   z-index: 999;
   border-bottom: 1px solid rgba(255, 255, 255, 0.24);
+}
+.header-title,
+.header-menu {
+  display: flex;
 }
 </style>
